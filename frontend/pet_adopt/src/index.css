@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.site-container {
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.pets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+img {
+  border-radius: 7px 7px 0px 0px;
+  width: 14rem;
+  height: 13rem;
+}
+
+.pet-card {
+  border: 4px #eb9797 solid;
+  border-radius: 10px;
+  margin: 1rem;
+  width: 14.5rem;
+  height: 22rem;
+}
+
+.pet-info p {
+  margin-left: 1rem;
+  margin-bottom: 2px;
+  margin-top: 8px;
+}
+
+.pet-tags {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.pet-tags p {
+  background-color: rgb(255, 192, 221);
+  padding: 2px 6px 2px 6px;
+  margin-right: -0.5rem;
+  border-radius: 1rem;
+  border: 1px #e290b2 solid;
+  font-size: 14px;
+}
+
+.pet-info Link {
+  text-decoration: none;
+  color: #333333;
+}
+
+.name-link {
+  text-decoration: none;
+  color: #333333;
+}
+
+.navbar {
+  background-color: #ffcee2;
+}
+.img-large {
+  max-width: 100%;
+  width: 60vh;
+  height: 72vh;
+  margin-left: -6rem;
+}
+.secondary-img {
+  margin-left: -5rem;
+}
+.petscreen-info {
+  margin-left: -17rem;
+  width: 25rem;
+}
