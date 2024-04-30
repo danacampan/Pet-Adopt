@@ -5,6 +5,7 @@ import { useEffect, useReducer, useState } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Pet from '../components/Pet';
+import { Helmet } from 'react-helmet-async';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -25,7 +26,7 @@ function HomeScreen() {
     loading: true,
     error: '',
   });
-  //const [pets, setPets] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
@@ -41,7 +42,10 @@ function HomeScreen() {
 
   return (
     <div>
-      <h1>Animale disponibile</h1>
+      <Helmet>
+        <title>Pet Adopt</title>
+      </Helmet>
+      <h1 className="be-vietnam-pro-semibold">Animale disponibile</h1>
       <div className="pets">
         {loading ? (
           <div>Loading...</div>
@@ -50,7 +54,7 @@ function HomeScreen() {
         ) : (
           <Row>
             {pets.map((pet) => (
-              <Col key={pet.slug} sm={6} md={4} lg={3} className="mb-3">
+              <Col key={pet.slug} sm={6} md={6} lg={3} className="mb-3">
                 <Pet pet={pet}></Pet>
               </Col>
             ))}

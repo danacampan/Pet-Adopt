@@ -1,10 +1,20 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    'Be Vietnam Pro', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.be-vietnam-pro-semibold {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+.be-vietnam-pro-medium {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-weight: 500;
+  font-style: normal;
 }
 
 .site-container {
@@ -31,21 +41,27 @@ code {
 img {
   border-radius: 7px 7px 0px 0px;
   width: 14rem;
-  height: 13rem;
+  height: 14rem;
 }
 
 .pet-card {
   border: 4px #eb9797 solid;
   border-radius: 10px;
   margin: 1rem;
-  width: 14.5rem;
-  height: 22rem;
+  margin-top: 2rem;
+  width: 16.5rem;
+  height: 23.5rem;
 }
 
 .pet-info p {
-  margin-left: 1rem;
-  margin-bottom: 2px;
+  margin-left: 10px;
+  margin-bottom: 5px;
   margin-top: 8px;
+  color: #333333;
+}
+
+.pet-info {
+  padding-left: 5px;
 }
 
 .pet-tags {
@@ -55,11 +71,11 @@ img {
 }
 .pet-tags p {
   background-color: rgb(255, 192, 221);
-  padding: 2px 6px 2px 6px;
-  margin-right: -0.5rem;
+  padding: 3px 7px 2px 7px;
+  margin-right: -0.3rem;
   border-radius: 1rem;
   border: 1px #e290b2 solid;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .pet-info Link {
@@ -77,7 +93,7 @@ img {
 }
 .img-large {
   max-width: 100%;
-  width: 60vh;
+  width: 70vh;
   height: 72vh;
   margin-left: -6rem;
 }
@@ -87,4 +103,51 @@ img {
 .petscreen-info {
   margin-left: -17rem;
   width: 25rem;
+}
+
+.adopt-button {
+  margin-top: 1rem;
+}
+.favorite-button {
+  margin-top: 0.1rem;
+  margin-left: 30px;
+  width: 30px;
+  height: 30px;
+  padding: 3px 4px 2px 5px;
+}
+
+.btn-light,
+.btn-dark,
+.btn-outline-light,
+.btn-outline-dark {
+  background-color: #ffcee2;
+  border-color: #ffcee2;
+}
+.btn-light:hover,
+.btn-dark:hover,
+.btn-outline-light:hover,
+.btn-outline-dark:hover {
+  background-color: #fdb4d1;
+  border-color: #fdb4d1;
+}
+.btn-light.active,
+.btn-dark.active,
+.btn-outline-light.active,
+.btn-outline-dark.active {
+  background-color: #ffcee2;
+  border-color: #ffcee2;
+}
+.img-thumbnail {
+  height: 100px;
+  width: 100px;
+}
+.favorite-items {
+  display: flex;
+}
+.small-container {
+  max-width: 600px;
+}
+.favorites-link Link {
+  text-decoration: none;
+  color: #333333;
 }

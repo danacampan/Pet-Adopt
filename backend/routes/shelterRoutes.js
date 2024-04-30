@@ -1,5 +1,5 @@
 import express from 'express';
-import Shelter from '../models/Shelter';
+import Shelter from '../models/shelterModel.js';
 
 const router = express.Router();
 

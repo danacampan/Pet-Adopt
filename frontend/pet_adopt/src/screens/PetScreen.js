@@ -1,9 +1,13 @@
 import axios from 'axios';
-import { useEffect, useReducer } from 'react';
-import { useParams } from 'react-router-dom';
+import { useContext, useEffect, useReducer } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import Badge from 'react-bootstrap/Badge';
 import ListGroup from 'react-bootstrap/ListGroup';
+import { Helmet } from 'react-helmet-async';
+import { Store } from '../store';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -19,6 +23,7 @@ const reducer = (state, action) => {
 };
 
 function PetScreen() {
+  const navigate = useNavigate();
   const params = useParams();
   const { slug } = params;
   const [{ loading, error, pet }, dispatch] = useReducer(reducer, {
@@ -39,6 +44,23 @@ function PetScreen() {
     };
     fetchData();
   }, [slug]);
+
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { favorites } = state;
+  const addToFavoritesHandler = () => {
+    const existItem = favorites.favoritesItems.find((x) => x._id === pet._id);
+    if (!existItem) {
+      ctxDispatch({ type: 'FAVORITES_ADD_ITEM', payload: pet });
+    } else {
+      window.alert('Ai adaugat deja acest animal la favorite');
+    }
+    //navigate('/favorites');
+  };
+
+  const adoptHandler = () => {
+    navigate('/signin?redirect=/form');
+  };
+
   return loading ? (
     <div>Loading...</div>
   ) : error ? (
@@ -46,7 +68,7 @@ function PetScreen() {
   ) : (
     <div>
       <Row className="d-flex justify-content-around">
-        <Col className="secondary-img" md={3} sm={6}>
+        <Col className="secondary-img" md={3}>
           <img className="img-fluid" src={pet.photos[1]} alt={pet.name}></img>
           <p></p>
           <img className="img-fluid" src={pet.photos[2]} alt={pet.name}></img>
@@ -58,9 +80,12 @@ function PetScreen() {
             alt={pet.name}
           ></img>
         </Col>
-        <Col className="petscreen-info" md={3} sm={6}>
+        <Col className="petscreen-info be-vietnam-pro-medium " md={3} sm={6}>
           <ListGroup variant="flush">
             <ListGroup.Item>
+              <Helmet>
+                <title>{pet.name}</title>
+              </Helmet>
               <h1>{pet.name}</h1>
             </ListGroup.Item>
             <ListGroup.Item>
@@ -82,9 +107,28 @@ function PetScreen() {
               <strong>Descriere:</strong> {pet.description}
             </ListGroup.Item>
             <ListGroup.Item>
-              <strong>Status:</strong> {pet.adoption_status}
+              <Col>
+                <strong>Status: </strong>
+                {pet.adoption_status === 'Disponibil' ? (
+                  <Badge bg="success">Disponibil</Badge>
+                ) : (
+                  <Badge bg="danger">Indisponibil</Badge>
+                )}
+              </Col>
             </ListGroup.Item>
+            {pet.adoption_status === 'Disponibil' && (
+              <div className="adopt-button ">
+                <Button onClick={adoptHandler} variant="light">
+                  Adoptă acum!
+                </Button>
+              </div>
+            )}
           </ListGroup>
+          <div className="adopt-button ">
+            <Button onClick={addToFavoritesHandler} variant="dark">
+              <i className="fas fa-heart"></i>
+            </Button>
+          </div>
         </Col>
         <Col md={3}></Col>
       </Row>

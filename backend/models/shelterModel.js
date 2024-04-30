@@ -11,7 +11,7 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-const shelterModel = new mongoose.Schema(
+const shelterSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     address: { type: String, required: true },
@@ -28,5 +28,5 @@ const shelterModel = new mongoose.Schema(
   }
 );
 
-const Shelter = mongoose.model('Shelter', shelterModel);
+const Shelter = mongoose.model('Shelter', shelterSchema);
 export default Shelter;

@@ -1,19 +1,37 @@
 import express from 'express';
 const petRouter = express.Router();
-import Pet from '../models/petModel';
+import Pet from '../models/petModel.js';
 
 // Route pentru a obtine toate animalele
 petRouter.get('/', async (req, res) => {
   try {
     const pets = await Pet.find();
-    res.json(pets);
+    res.send(pets);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
+petRouter.get('/slug/:slug', async (req, res) => {
+  const pet = await Pet.findOne({ slug: req.params.slug });
+  if (pet) {
+    res.send(pet);
+  } else {
+    res.status(404).send({ message: 'Pet not found' });
+  }
+});
+
+petRouter.get('/:id', async (req, res) => {
+  const pet = await PetById.find(req.params.id);
+  if (pet) {
+    res.send(pet);
+  } else {
+    res.status(404).send({ message: 'Pet not found' });
+  }
+});
+
 // Route pentru a crea un animal nou
-petRouter.post('/', async (req, res) => {
+/* petRouter.post('/', async (req, res) => {
   const pet = new Pet({
     name: req.body.name,
     breed: req.body.breed,
@@ -68,5 +86,5 @@ petRouter.delete('/:id', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-module.exports = petRouter;
+*/
+export default petRouter;

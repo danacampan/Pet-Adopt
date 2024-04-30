@@ -73,7 +73,7 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'artimarket67@gmail.com',
-    pass: 'oesa xvxz zvao nsch',
+    pass: 'xqvy mudu zcok moie',
   },
   tls: {
     rejectUnauthorized: false,
@@ -96,7 +96,7 @@ userRouter.post(
         return;
       }
     }
-    res.status(401).send({ message: 'Email sau parolă invalide' });
+    res.status(401).send({ message: 'Email sau parola invalide' });
   })
 );
 
@@ -105,7 +105,7 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser) {
-      return res.status(400).send({ message: 'Email-ul e deja înregistrat' });
+      return res.status(400).send({ message: 'Email-ul e deja inregistrat' });
     }
 
     try {
@@ -129,7 +129,7 @@ userRouter.post(
       const confirmationLink = `${process.env.FRONTEND_URL}/confirm/${confirmationToken}`;
 
       const mailOptions = {
-        from: 'artimarket67@gmail.com',
+        from: 'petadopt38@gmail.com',
         to: savedUser.email,
         subject: 'Confirmă înregistrarea',
         text: `Dă click pe următorul link pentru a-ți verifica emailul: ${confirmationLink}`,

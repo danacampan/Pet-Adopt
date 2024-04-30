@@ -31,7 +31,7 @@ const data = {
     {
       name: 'Lila',
       slug: 'lila',
-      breed: 'cat',
+      breed: 'British shorthair',
       age: '3 ani',
       gender: 'Feminin',
       address: 'Adapost Timisoara, Strada Cluj',
@@ -49,7 +49,7 @@ const data = {
       address: 'Adapost Timisoara, Strada Cluj',
       description: 'Foarte jucausa',
       medical_info: 'Sanatoasa',
-      adoption_status: 'Disponibil',
+      adoption_status: 'Indisponibil',
       photos: ['/images/cat3.jpg'],
     },
     {
