@@ -1,10 +1,12 @@
 import express from 'express';
 import Shelter from '../models/shelterModel.js';
+import expressAsyncHandler from 'express-async-handler';
+import { isAuth, isAdmin } from '../utils.js';
 
-const router = express.Router();
+const shelterRouter = express.Router();
 
 // GET pentru a obtine toate adaposturile de animale
-router.get('/', async (req, res) => {
+shelterRouter.get('/', async (req, res) => {
   try {
     const shelters = await Shelter.find();
     res.json(shelters);
@@ -12,14 +14,22 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+shelterRouter.get('/name/:name', async (req, res) => {
+  const shelter = await Shelter.findOne({ name: req.params.name });
+  if (shelter) {
+    res.send(shelter);
+  } else {
+    res.status(404).send({ message: 'Shelter not found' });
+  }
+});
 
 // GET pentru a obtine un adapost specific dupa ID
-router.get('/:id', getShelter, (req, res) => {
+shelterRouter.get('/:id', getShelter, (req, res) => {
   res.json(res.shelter);
 });
 
 // POST pentru a crea un nou adapost de animale
-router.post('/', async (req, res) => {
+shelterRouter.post('/', async (req, res) => {
   const shelter = new Shelter({
     name: req.body.name,
     address: req.body.address,
@@ -38,7 +48,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT pentru a actualiza un adăpost de animale existent
-router.put('/:id', getShelter, async (req, res) => {
+shelterRouter.put('/:id', getShelter, async (req, res) => {
   if (req.body.name != null) {
     res.shelter.name = req.body.name;
   }
@@ -53,7 +63,7 @@ router.put('/:id', getShelter, async (req, res) => {
 });
 
 // DELETE pentru a sterge un adapost de animale existent
-router.delete('/:id', getShelter, async (req, res) => {
+shelterRouter.delete('/:id', getShelter, async (req, res) => {
   try {
     await res.shelter.remove();
     res.json({ message: 'Adăpostul a fost șters' });
@@ -62,7 +72,7 @@ router.delete('/:id', getShelter, async (req, res) => {
   }
 });
 
-router.post(
+shelterRouter.post(
   '/:id/reviews',
   isAuth,
   expressAsyncHandler(async (req, res) => {
@@ -90,10 +100,10 @@ router.post(
         message: 'Review Created',
         review: updatedShelter.reviews[updatedShelter.reviews.length - 1],
         numReviews: shelter.numReviews,
-        rating: shelter.rating,
+        rating: Number(shelter.rating),
       });
     } else {
-      res.status(404).send({ message: 'Product Not Found' });
+      res.status(404).send({ message: 'Shelter Not Found' });
     }
   })
 );
@@ -113,4 +123,4 @@ async function getShelter(req, res, next) {
   next();
 }
 
-module.exports = router;
+export default shelterRouter;

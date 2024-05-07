@@ -13,7 +13,7 @@ petRouter.get('/', async (req, res) => {
 });
 
 petRouter.get('/slug/:slug', async (req, res) => {
-  const pet = await Pet.findOne({ slug: req.params.slug });
+  const pet = await Pet.findOne({ slug: req.params.slug }).populate('user');
   if (pet) {
     res.send(pet);
   } else {
@@ -31,9 +31,10 @@ petRouter.get('/:id', async (req, res) => {
 });
 
 // Route pentru a crea un animal nou
-/* petRouter.post('/', async (req, res) => {
+petRouter.post('/addpost', async (req, res) => {
   const pet = new Pet({
     name: req.body.name,
+    slug: req.body.slug,
     breed: req.body.breed,
     age: req.body.age,
     gender: req.body.gender,
@@ -42,6 +43,7 @@ petRouter.get('/:id', async (req, res) => {
     medical_info: req.body.medical_info,
     adoption_status: req.body.adoption_status,
     photos: req.body.photos,
+    user: req.body.user,
   });
 
   try {
@@ -51,6 +53,7 @@ petRouter.get('/:id', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+/*
 
 // Route pentru a obtine un animal dupa ID
 petRouter.get('/:id', async (req, res) => {

@@ -66,5 +66,20 @@ const data = {
       photos: ['/images/dog1.jpg'],
     },
   ],
+  shelters: [
+    {
+      _id: 1,
+      name: 'CozyPawsShelter',
+      address: 'Comuna Şag, DN 59, Km 12+200',
+      phone_number: '555-123-4567',
+      email: 'info@cozypaws.com',
+      description:
+        'A cozy shelter dedicated to finding loving homes for pets in need.',
+      photos: [],
+      rating: 4.5,
+      numReviews: 20,
+      reviews: [''],
+    },
+  ],
 };
 export default data;

@@ -24,7 +24,7 @@ export default function FavoritesScreen() {
         <title>Favorite</title>
       </Helmet>
       <h1 className="mb-4">Favorite</h1>
-      <Col md={6} sm={6}>
+      <Col md={6} sm={12}>
         {favoritesItems === 0 ? (
           <MessageBox>
             Sectiunea este goala. <Link to="/">Cauta animale</Link>

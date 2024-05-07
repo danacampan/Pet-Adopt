@@ -11,9 +11,31 @@ const initialState = {
       ? JSON.parse(localStorage.getItem('favoritesItems'))
       : [],
   },
+  pets: {
+    petsItems: localStorage.getItem('petsItems')
+      ? JSON.parse(localStorage.getItem('petsItems'))
+      : [],
+  },
+  shelters: {
+    sheltersItems: localStorage.getItem('sheltersItems')
+      ? JSON.parse(localStorage.getItem('sheltersItems'))
+      : [],
+  },
 };
 function reducer(state, action) {
   switch (action.type) {
+    case 'PET_ADD_ITEM':
+      const newPet = action.payload;
+      const existPet = state.pets.petsItems.find(
+        (pet) => pet._id === newPet._id
+      );
+      const petsItems = existPet
+        ? state.pets.pets.map((pet) =>
+            pet._id === existPet._id ? newPet : pet
+          )
+        : [...state.pets.petsItems, newPet];
+      localStorage.setItem('pets', JSON.stringify(petsItems));
+      return { ...state, pets: { ...state.pets, petsItems } };
     case 'FAVORITES_ADD_ITEM':
       const newItem = action.payload;
       const existItem = state.favorites.favoritesItems.find(
@@ -43,7 +65,14 @@ function reducer(state, action) {
     case 'USER_SIGNIN':
       return { ...state, userInfo: action.payload };
     case 'USER_SIGNOUT':
-      return { ...state, userInfo: null };
+      return {
+        ...state,
+        userInfo: null,
+        pets: {
+          petsItems: {},
+          favoritesItems: [],
+        },
+      };
     default:
       return state;
   }

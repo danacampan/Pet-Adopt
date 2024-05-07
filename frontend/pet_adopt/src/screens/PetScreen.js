@@ -17,6 +17,10 @@ const reducer = (state, action) => {
       return { ...state, pet: action.payload, loading: false };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
+    //case 'PET_ADD_ITEM':
+    //return { ...state, pet: [...state.pet, action.payload] };
+    case 'USER_FETCH_SUCCESS':
+      return { ...state, user: action.payload };
     default:
       return state;
   }
@@ -38,6 +42,8 @@ function PetScreen() {
       try {
         const result = await axios.get(`/api/pets/slug/${slug}`);
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+        //dispatch({ type: 'PET_ADD_ITEM', payload: result.data });
+        dispatch({ type: 'USER_FETCH_SUCCESS', payload: result.data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: err.message });
       }
@@ -86,7 +92,14 @@ function PetScreen() {
               <Helmet>
                 <title>{pet.name}</title>
               </Helmet>
-              <h1>{pet.name}</h1>
+              <div className="d-flex flex-row justify-content-between">
+                <h1>{pet.name}</h1>
+                <div className="adopt-button ">
+                  <Button onClick={addToFavoritesHandler} variant="dark">
+                    <i className="fas fa-heart"></i>
+                  </Button>
+                </div>
+              </div>
             </ListGroup.Item>
             <ListGroup.Item>
               <strong>Vârstă:</strong> {pet.age}
@@ -116,6 +129,9 @@ function PetScreen() {
                 )}
               </Col>
             </ListGroup.Item>
+            <p className="mt-2 px-3 ">
+              <strong>Utilizator:</strong> {pet.user.name}
+            </p>
             {pet.adoption_status === 'Disponibil' && (
               <div className="adopt-button ">
                 <Button onClick={adoptHandler} variant="light">
@@ -124,12 +140,8 @@ function PetScreen() {
               </div>
             )}
           </ListGroup>
-          <div className="adopt-button ">
-            <Button onClick={addToFavoritesHandler} variant="dark">
-              <i className="fas fa-heart"></i>
-            </Button>
-          </div>
         </Col>
+
         <Col md={3}></Col>
       </Row>
     </div>

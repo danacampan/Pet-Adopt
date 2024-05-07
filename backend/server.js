@@ -5,16 +5,8 @@ import dotenv from 'dotenv';
 import petRouter from './routes/petRoutes.js';
 import seedRouter from './routes/seedRoutes.js';
 import userRouter from './routes/userRoutes.js';
-/* import nodemailer from 'nodemailer';
-
-import seedRouter from './routes/seedRouter.js';
-import productRouter from './routes/productRouter.js';
-import userRouter from './routes/userRouter.js';
-import orderRouter from './routes/orderRouter.js';
-import uploadRouter from './routes/uploadRouter.js';
-import seedPromotions from './promotionSeeder.js';
-import promotionRouter from './routes/promotionRouter.js';
-import cors from 'cors'; */
+import cors from 'cors';
+import shelterRouter from './routes/shelterRoutes.js';
 
 dotenv.config();
 
@@ -27,38 +19,20 @@ mongoose
     console.log(err.message);
   });
 
-//seedPromotions();
 const app = express();
 app.use(express.json());
-//app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use('/api/seed', seedRouter);
-app.use('/api/pets', petRouter);
-app.use('/api/users', userRouter);
-
-app.get('/api/pets/slug/:slug', (req, res) => {
-  const pet = data.pets.find((x) => x.slug === req.params.slug);
-  if (pet) {
-    res.send(pet);
-  } else {
-    res.status(404).send({ message: 'Pet not found' });
-  }
-  res.send(data.pets);
-});
-
-app.get('/api/pets/:id', (req, res) => {
-  const pet = data.pets.find((x) => x._id === req.params.id);
-  if (pet) {
-    res.send(pet);
-  } else {
-    res.status(404).send({ message: 'Pet not found' });
-  }
-  res.send(data.pets);
-});
-
-/* app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+
+/* app.get('/api/shelter/name/:name', (req, res) => {
+  const shelter = data.shelters.find((x) => x.name === req.params.name);
+  if (shelter) {
+    res.send(shelter);
+  } else {
+    res.status(404).send({ message: 'Shelter not found' });
+  }
+  res.send(data.shelters);
+}); */
 
 app.post('/api/send-email', async (req, res) => {
   const { to = 'campan.dana15@gmail.com', subject, text } = req.body;
@@ -66,8 +40,8 @@ app.post('/api/send-email', async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'artimarket67@gmail.com',
-      pass: 'oesa xvxz zvao nsch',
+      user: 'petadopt38@gmail.com',
+      pass: 'xqvy mudu zcok moie',
     },
     tls: {
       rejectUnauthorized: false,
@@ -91,12 +65,10 @@ app.post('/api/send-email', async (req, res) => {
   }
 });
 
-//app.use('/api/upload', uploadRouter);
-//app.use('/api/seed', seedRouter);
+app.use('/api/seed', seedRouter);
 app.use('/api/pets', petRouter);
 app.use('/api/users', userRouter);
-//app.use('/api/orders', orderRouter);
-//app.use('/api/promotions', promotionRouter); */
+app.use('/api/shelters', shelterRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

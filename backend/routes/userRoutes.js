@@ -72,7 +72,7 @@ userRouter.delete(
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'artimarket67@gmail.com',
+    user: 'petadopt38@gmail.com',
     pass: 'xqvy mudu zcok moie',
   },
   tls: {
