@@ -14,6 +14,14 @@ petRouter.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+petRouter.get('/user', isAuth, async (req, res) => {
+  try {
+    const pets = await Pet.find({ user: req.user._id });
+    res.send(pets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 petRouter.get('/slug/:slug', async (req, res) => {
   const pet = await Pet.findOne({ slug: req.params.slug }).populate('user');
@@ -25,7 +33,7 @@ petRouter.get('/slug/:slug', async (req, res) => {
 });
 
 petRouter.get('/:id', async (req, res) => {
-  const pet = await PetById.find(req.params.id);
+  const pet = await Pet.findById(req.params.id);
   if (pet) {
     res.send(pet);
   } else {
@@ -57,16 +65,33 @@ petRouter.post('/addpost', async (req, res) => {
   }
 });
 
-petRouter.get('/user/:username', async (req, res) => {
+petRouter.put('/:id', isAuth, async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    const pet = await Pet.findById(req.params.id);
+    if (pet) {
+      if (pet.user.toString() === req.user._id.toString()) {
+        if (
+          req.body.adoption_status === 'Disponibil' ||
+          req.body.adoption_status === 'Indisponibil'
+        ) {
+          pet.adoption_status = req.body.adoption_status;
+          const updatedPet = await pet.save();
+          res.send(updatedPet);
+        } else {
+          res
+            .status(400)
+            .send({ message: 'Valoarea statusului de adoptie nu este valida' });
+        }
+      } else {
+        res.status(403).send({
+          message: 'Nu aveti permisiunea de a actualiza acest animal',
+        });
+      }
+    } else {
+      res.status(404).send({ message: 'Animalul nu a fost găsit' });
     }
-    const pets = await Pet.find({ user: user.name });
-    res.send(pets);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).send({ message: err.message });
   }
 });
 
@@ -74,57 +99,24 @@ petRouter.delete(
   '/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const pet = await Pet.findById(req.params.id);
-    if (pet) {
-      if (pet.user.toString() === req.user._id.toString()) {
-        await pet.remove();
-        res.send({ message: 'Pet Deleted' });
-      } else {
-        res
+    try {
+      const pet = await Pet.findById(req.params.id);
+      if (!pet) {
+        return res.status(404).send({ message: 'Pet Not Found' });
+      }
+
+      if (pet.user.toString() !== req.user._id.toString()) {
+        return res
           .status(403)
           .send({ message: 'You are not authorized to delete this pet' });
       }
-    } else {
-      res.status(404).send({ message: 'Pet Not Found' });
+
+      await Pet.findByIdAndDelete(req.params.id);
+      res.send({ message: 'Pet Deleted' });
+    } catch (error) {
+      res.status(500).send({ message: 'Server Error' });
     }
   })
 );
-/*
 
-// Route pentru a obtine un animal dupa ID
-petRouter.get('/:id', async (req, res) => {
-  try {
-    const pet = await Pet.findById(req.params.id);
-    if (!pet) {
-      return res.status(404).json({ message: 'Animal not found' });
-    }
-    res.json(pet);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Route pentru a actualiza un animal dupa ID
-petRouter.patch('/:id', async (req, res) => {
-  try {
-    const pet = await Pet.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(pet);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-
-// Route pentru a sterge un animal dupa ID
-petRouter.delete('/:id', async (req, res) => {
-  try {
-    await Pet.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Animal deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-*/
 export default petRouter;

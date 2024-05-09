@@ -20,6 +20,7 @@ import MapScreen from './screens/MapScreen';
 import AdoptFormScreen from './screens/AdoptFormScreen';
 import ShelterInfoScreen from './screens/ShelterInfoScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -59,7 +60,7 @@ function App() {
                 </Link>
                 {userInfo ? (
                   <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
-                    <LinkContainer to="/profile/:username">
+                    <LinkContainer to={`/profile/${userInfo.name}`}>
                       <NavDropdown.Item>Profil</NavDropdown.Item>
                     </LinkContainer>
                     <NavDropdown.Divider />
@@ -92,12 +93,13 @@ function App() {
               <Route path="/map" element={<MapScreen />} />
               <Route path="/form" element={<AdoptFormScreen />} />
               <Route path="/shelter/:name" element={<ShelterInfoScreen />} />
-              <Route path="/profile/:username" element={<ProfileScreen />} />
+              <Route path="/profile/:name" element={<ProfileScreen />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyScreen />} />
             </Routes>
           </Container>
         </main>
         <footer>
-          <div className="text-center">All rights reserved</div>
+          <div className="text-center footer">All rights reserved</div>
         </footer>
       </div>
     </BrowserRouter>

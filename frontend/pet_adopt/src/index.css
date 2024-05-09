@@ -5,6 +5,10 @@ body {
     'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url('Desktop3.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 .be-vietnam-pro-semibold {
   font-family: 'Be Vietnam Pro', sans-serif;
@@ -32,6 +36,14 @@ code {
     monospace;
 }
 
+h1 {
+  color: #333333;
+}
+
+.footer {
+  color: #a3a3a3;
+}
+
 .pets {
   display: flex;
   flex-wrap: wrap;
@@ -45,7 +57,7 @@ img {
 }
 
 .pet-card {
-  border: 4px #eb9797 solid;
+  border: 4px #f0b5b5 solid;
   border-radius: 10px;
   margin: 1rem;
   margin-top: 2rem;
@@ -70,7 +82,7 @@ img {
   justify-content: flex-start;
 }
 .pet-tags p {
-  background-color: rgb(255, 192, 221);
+  background-color: #f0b5b5;
   padding: 3px 7px 2px 7px;
   margin-right: -0.3rem;
   border-radius: 1rem;
@@ -89,8 +101,9 @@ img {
 }
 
 .navbar {
-  background-color: #ffcee2;
+  background-color: #ffdfdf;
 }
+
 .img-large {
   max-width: 100%;
   width: 70vh;
@@ -120,22 +133,22 @@ img {
 .btn-dark,
 .btn-outline-light,
 .btn-outline-dark {
-  background-color: #ffcee2;
-  border-color: #ffcee2;
+  background-color: #f0b5b5;
+  border-color: #f0b5b5;
 }
 .btn-light:hover,
 .btn-dark:hover,
 .btn-outline-light:hover,
 .btn-outline-dark:hover {
-  background-color: #fdb4d1;
-  border-color: #fdb4d1;
+  background-color: #ffdfdf;
+  border-color: #ffdfdf;
 }
 .btn-light.active,
 .btn-dark.active,
 .btn-outline-light.active,
 .btn-outline-dark.active {
-  background-color: #ffcee2;
-  border-color: #ffcee2;
+  background-color: #f0b5b5;
+  border-color: #f0b5b5;
 }
 .img-thumbnail {
   height: 100px;
@@ -143,6 +156,9 @@ img {
 }
 .favorite-items {
   display: flex;
+}
+.white-container {
+  background-color: white;
 }
 .small-container {
   max-width: 600px;

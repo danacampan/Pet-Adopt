@@ -88,6 +88,7 @@ function PetScreen() {
             width: '100%',
             marginRight: '400px',
             marginTop: '20px',
+            marginBottom: '150px',
             borderRadius: '20px',
           }}
         >
@@ -95,7 +96,7 @@ function PetScreen() {
             {pet.photos.map((photo, index) => (
               <Carousel.Item key={index}>
                 <img
-                  className="d-block w-100 h-100"
+                  className="d-flex w-100 h-100"
                   src={photo}
                   alt={`Slide ${index}`}
                 />

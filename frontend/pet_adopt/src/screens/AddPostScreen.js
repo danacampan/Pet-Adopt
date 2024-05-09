@@ -26,7 +26,7 @@ export default function AddPostScreen() {
   const [gender, setGender] = useState(''); //(petsInfo.gender || '');
   const [address, setAddress] = useState(''); //(petsInfo.address || '');
   const [description, setDescription] = useState(''); //(petsInfo.description || '');
-  const [medicalInfo, setMedicalInfo] = useState(''); //(petsInfo.medicalInfo || '');
+  const [medical_info, setMedical_Info] = useState(''); //(petsInfo.medicalInfo || '');
   const [adoptionStatus, setAdoptionStatus] = useState('Disponibil');
   const [photos, setPhotos] = useState([]);
 
@@ -40,7 +40,6 @@ export default function AddPostScreen() {
     e.preventDefault();
 
     try {
-      // Transform photos to an array of Base64 encoded strings
       const photosArray = [];
       for (let i = 0; i < photos.length; i++) {
         const reader = new FileReader();
@@ -48,11 +47,11 @@ export default function AddPostScreen() {
         reader.onload = () => {
           photosArray.push(reader.result);
           if (photosArray.length === photos.length) {
-            // When all photos are processed, send the request
             sendRequestWithPhotos(photosArray);
           }
         };
       }
+      navigate('/');
     } catch (err) {
       console.error(err);
       toast.error('Eroare la procesarea fotografiilor.');
@@ -68,7 +67,7 @@ export default function AddPostScreen() {
         gender,
         address,
         description,
-        medicalInfo,
+        medical_info,
         adoptionStatus,
         photos: photosArray,
         user: userInfo._id,
@@ -85,7 +84,7 @@ export default function AddPostScreen() {
         setGender('');
         setAddress('');
         setDescription('');
-        setMedicalInfo('');
+        setMedical_Info('');
         setAdoptionStatus('Disponibil');
         setPhotos([]);
       } else {
@@ -124,8 +123,8 @@ export default function AddPostScreen() {
             onChange={(e) => setAge(e.target.value)}
           >
             <option value="">Alegeți vârsta</option>
-            <option value="Pui-câteva luni">Pui (câteva luni)</option>
-            <option value="Adult-câțiva ani">Adult (câțiva ani)</option>
+            <option value="Pui">Pui (câteva luni)</option>
+            <option value="Adult">Adult (câțiva ani)</option>
           </Form.Control>
         </Form.Group>
         <Form.Group className="mb-3" controlId="breed">
@@ -171,9 +170,9 @@ export default function AddPostScreen() {
         <Form.Group className="mb-3" controlId="medicalInfo">
           <Form.Label>Informatii medicale</Form.Label>
           <Form.Control
-            value={medicalInfo}
+            value={medical_info}
             required
-            onChange={(e) => setMedicalInfo(e.target.value)}
+            onChange={(e) => setMedical_Info(e.target.value)}
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="photos">
@@ -186,7 +185,9 @@ export default function AddPostScreen() {
         </Form.Group>
 
         <div className="mb-3">
-          <Button type="submit">Salveaza</Button>
+          <Button type="submit" variant="light">
+            Salveaza
+          </Button>
         </div>
       </Form>
     </Container>

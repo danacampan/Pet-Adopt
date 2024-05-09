@@ -26,16 +26,6 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-/* app.get('/api/shelter/name/:name', (req, res) => {
-  const shelter = data.shelters.find((x) => x.name === req.params.name);
-  if (shelter) {
-    res.send(shelter);
-  } else {
-    res.status(404).send({ message: 'Shelter not found' });
-  }
-  res.send(data.shelters);
-}); */
-
 app.post('/api/send-email', async (req, res) => {
   const { to = 'campan.dana15@gmail.com', subject, text } = req.body;
 

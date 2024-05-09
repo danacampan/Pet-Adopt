@@ -70,7 +70,7 @@ const AdoptFormScreen = () => {
       console.log('Form data sent to server:', data);
 
       const emailData = {
-        recipient: 'campan.dana15@gmail.com',
+        recipient: 'petadopt38@gmail.com',
         subject: 'Formular de cerere pentru adopție',
         html: `
         <body style="font-family: Arial, sans-serif;">
@@ -104,12 +104,12 @@ const AdoptFormScreen = () => {
                 <strong>Locuiți în chirie sau dețineți casa?</strong> ${formData.homeOwnership}<br>
                 <strong>Aveți curte?</strong> ${formData.yard}<br>
                 <strong>Politica proprietarului referitoare la animalele de companie:</strong> ${formData.landlordPolicy}<br>
-                <strong>Ați abandonat vreodată un animal de companie?</strong> [Da/Nu]<br>
-                <strong>Aveți copii în locuință?</strong> [Da/Nu] (Vârstele copiilor)<br>
-                <strong>Câte ore pe zi va fi animalul lăsat singur?</strong> [Ore pe zi]<br>
-                <strong>Unde va sta animalul dvs. de companie în cazul în care trebuie să plecați din oraș?</strong> [Locație]<br>
-                <strong>Cum veți gestiona problemele comportamentale ale animalului dvs.?</strong> [Răspuns]<br>
-                <strong>Ați fost vreodată condamnat pentru o infracțiune legată de animale?</strong> [Da/Nu]
+                <strong>Ați abandonat vreodată un animal de companie?</strong> ${formData.abandon}<br>
+                <strong>Aveți copii în locuință?</strong>  ${formData.children}<br>
+                <strong>Câte ore pe zi va fi animalul lăsat singur?</strong>  ${formData.aloneTime}<br>
+                <strong>Unde va sta animalul dvs. de companie în cazul în care trebuie să plecați din oraș?</strong> ${formData.leave}<br>
+                <strong>Cum veți gestiona problemele comportamentale ale animalului dvs.?</strong>  ${formData.problems}<br>
+                <strong>Ați fost vreodată condamnat pentru o infracțiune legată de animale?</strong>  ${formData.crime}
             </p>
             
             <p>Vă mulțumim încă o dată pentru interesul dumneavoastră în adoptarea unui animal de companie. Vom analiza cererea dumneavoastră și vă vom contacta în cel mai scurt timp posibil.</p>

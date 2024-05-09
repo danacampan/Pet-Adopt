@@ -59,8 +59,61 @@ formRouter.post('/', async (req, res) => {
     });
     const savedForm = await newForm.save();
 
-    const mailOptions = {
-      from: 'campan.dana15@gmail.com',
+    const mailOptionsToPetOwner = {
+      from: 'petadopt38@gmail.com',
+      to: 'maria.campan03@e-uvt.ro',
+      subject: 'Cerere nouă de adoptie',
+      html: `
+      <body style="font-family: Arial, sans-serif;">
+
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="text-align: center;">Confirmare cerere de adoptare</h2>
+          
+          <h3>Bună Maria,</h3>
+          
+          <h2>${req.body.firstName} ${req.body.lastName} doreste sa adopte animalul postat pe site: ${req.body.pet}</h2>
+          <p>Mai jos puteti vedea informatiile de contact:</p>
+          
+          <h3>Informații Personale:</h3>
+          <p>
+              <strong>Nume:</strong> ${req.body.firstName} ${req.body.lastName} <br>
+              <strong>Email:</strong> ${req.body.email} <br>
+              <strong>Număr de telefon:</strong> ${req.body.phone} <br>
+             
+          </p>
+          
+          <h3>Adresă:</h3>
+          <p>
+              ${req.body.address}<br>
+              ${req.body.city}, ${req.body.county}<br>
+              <strong>Cod poștal:</strong> ${req.body.zip}<br>
+              <strong>Țară:</strong> ${req.body.country}
+          </p>
+          
+          <h3>Alte detalii:</h3>
+          <p>
+              <strong>Dețineți alte animale de companie?</strong> ${req.body.ownPets}<br>
+              <strong>Locuiți în chirie sau dețineți casa?</strong> ${req.body.homeOwnership}<br>
+              <strong>Aveți curte?</strong> ${req.body.yard}<br>
+              <strong>Politica proprietarului referitoare la animalele de companie:</strong> ${req.body.landlordPolicy}<br>
+              <strong>Ați abandonat vreodată un animal de companie?</strong> ${req.body.abandon}<br>
+              <strong>Aveți copii în locuință?</strong>  ${req.body.children}<br>
+              <strong>Câte ore pe zi va fi animalul lăsat singur?</strong>  ${req.body.aloneTime}<br>
+              <strong>Unde va sta animalul dvs. de companie în cazul în care trebuie să plecați din oraș?</strong> ${req.body.leave}<br>
+              <strong>Cum veți gestiona problemele comportamentale ale animalului dvs.?</strong>  ${req.body.problems}<br>
+              <strong>Ați fost vreodată condamnat pentru o infracțiune legată de animale?</strong>  ${req.body.crime}
+          </p>
+          
+          <p>Vă mulțumim încă o dată pentru interesul dumneavoastră în adoptarea unui animal de companie. Vom analiza cererea dumneavoastră și vă vom contacta în cel mai scurt timp posibil.</p>
+          
+          <p>Cu stimă,<br>
+          Echipa noastră de adopții</p>
+      </div>
+      `,
+    };
+
+    const mailOptionsToUser = {
+      from: 'petadopt38@gmail.com',
       to: req.body.email,
       subject: 'Formular de cerere pentru adopție',
       html: `
@@ -95,12 +148,12 @@ formRouter.post('/', async (req, res) => {
               <strong>Locuiți în chirie sau dețineți casa?</strong> ${req.body.homeOwnership}<br>
               <strong>Aveți curte?</strong> ${req.body.yard}<br>
               <strong>Politica proprietarului referitoare la animalele de companie:</strong> ${req.body.landlordPolicy}<br>
-              <strong>Ați abandonat vreodată un animal de companie?</strong> [Da/Nu]<br>
-              <strong>Aveți copii în locuință?</strong> [Da/Nu] (Vârstele copiilor)<br>
-              <strong>Câte ore pe zi va fi animalul lăsat singur?</strong> [Ore pe zi]<br>
-              <strong>Unde va sta animalul dvs. de companie în cazul în care trebuie să plecați din oraș?</strong> [Locație]<br>
-              <strong>Cum veți gestiona problemele comportamentale ale animalului dvs.?</strong> [Răspuns]<br>
-              <strong>Ați fost vreodată condamnat pentru o infracțiune legată de animale?</strong> [Da/Nu]
+              <strong>Ați abandonat vreodată un animal de companie?</strong> ${req.body.abandon}<br>
+              <strong>Aveți copii în locuință?</strong>  ${req.body.children}<br>
+              <strong>Câte ore pe zi va fi animalul lăsat singur?</strong>  ${req.body.aloneTime}<br>
+              <strong>Unde va sta animalul dvs. de companie în cazul în care trebuie să plecați din oraș?</strong> ${req.body.leave}<br>
+              <strong>Cum veți gestiona problemele comportamentale ale animalului dvs.?</strong>  ${req.body.problems}<br>
+              <strong>Ați fost vreodată condamnat pentru o infracțiune legată de animale?</strong>  ${req.body.crime}
           </p>
           
           <p>Vă mulțumim încă o dată pentru interesul dumneavoastră în adoptarea unui animal de companie. Vom analiza cererea dumneavoastră și vă vom contacta în cel mai scurt timp posibil.</p>
@@ -111,7 +164,9 @@ formRouter.post('/', async (req, res) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptionsToPetOwner);
+    await transporter.sendMail(mailOptionsToUser);
+
     console.log('Email sent successfully');
     res.status(201).send(savedForm);
   } catch (error) {
@@ -119,57 +174,5 @@ formRouter.post('/', async (req, res) => {
     res.status(500).send({ message: 'Error submitting form' });
   }
 });
-
-/* const mailOptions = {
-      from: 'petadopt38@gmail.com',
-      to: req.body.email,
-      subject: 'Formular de cerere pentru adopție',
-      html: `
-      <body style="font-family: Arial, sans-serif;">
-
-      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="text-align: center;">Confirmare cerere de adoptare</h2>
-          
-          <p>Bună ${form.firstName},</p>
-          
-          <p>Îți mulțumim că ai completat formularul nostru pentru adoptarea unui animal de companie. Mai jos găsești un rezumat al informațiilor furnizate:</p>
-          
-          <h3>Informații Personale:</h3>
-          <p>
-              <strong>Nume:</strong> ${form.firstName} ${form.lastName} <br>
-              <strong>Email:</strong> ${form.email} <br>
-              <strong>Număr de telefon:</strong> ${form.phone} <br>
-              <strong>Numele animalului pe care doriți să-l adoptați:</strong> ${form.pet}
-          </p>
-          
-          <h3>Adresă:</h3>
-          <p>
-              ${form.address}<br>
-              ${form.city}, ${form.county}<br>
-              <strong>Cod poștal:</strong> ${form.zip}<br>
-              <strong>Țară:</strong> ${form.country}
-          </p>
-          
-          <h3>Alte detalii:</h3>
-          <p>
-              <strong>Dețineți alte animale de companie?</strong> ${form.ownPets}<br>
-              <strong>Locuiți în chirie sau dețineți casa?</strong> ${form.homeOwnership}<br>
-              <strong>Aveți curte?</strong> ${form.yard}<br>
-              <strong>Politica proprietarului referitoare la animalele de companie:</strong> ${form.landlordPolicy}<br>
-              <strong>Ați abandonat vreodată un animal de companie?</strong> [Da/Nu]<br>
-              <strong>Aveți copii în locuință?</strong> [Da/Nu] (Vârstele copiilor)<br>
-              <strong>Câte ore pe zi va fi animalul lăsat singur?</strong> [Ore pe zi]<br>
-              <strong>Unde va sta animalul dvs. de companie în cazul în care trebuie să plecați din oraș?</strong> [Locație]<br>
-              <strong>Cum veți gestiona problemele comportamentale ale animalului dvs.?</strong> [Răspuns]<br>
-              <strong>Ați fost vreodată condamnat pentru o infracțiune legată de animale?</strong> [Da/Nu]
-          </p>
-          
-          <p>Vă mulțumim încă o dată pentru interesul dumneavoastră în adoptarea unui animal de companie. Vom analiza cererea dumneavoastră și vă vom contacta în cel mai scurt timp posibil.</p>
-          
-          <p>Cu stimă,<br>
-          Echipa noastră de adopții</p>
-      </div>
-      `, 
-    }; */
 
 export default formRouter;

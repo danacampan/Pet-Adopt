@@ -20,6 +20,7 @@ export default function SignupScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agreedToGDPR, setAgreedToGDPR] = useState(false); // Starea pentru acordul GDPR
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
@@ -28,6 +29,11 @@ export default function SignupScreen() {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error('Parolele nu sunt la fel');
+      return;
+    }
+    if (!agreedToGDPR) {
+      // Verificarea dacă utilizatorul a acceptat GDPR
+      toast.error('Trebuie să fii de acord cu Politica de Confidențialitate');
       return;
     }
     try {
@@ -39,30 +45,16 @@ export default function SignupScreen() {
         password,
       });
 
-      /* await Axios.post('/api/send-email', {
-        recipient: email,
-        subject: 'Confirma email-ul',
-        text: `Te rog apasa pe urmatorul link pentru a-ti verifica email-ul: ${data.confirmationTokenLink}`,
-      });*/
-
-      //ctxDispatch({ type: 'USER_SIGNIN', payload: data });
       localStorage.setItem('userInfo', JSON.stringify(data));
       toast.success(
         'Înregistrare reușită. Un email de confirmare a fost trimis.'
       );
-      //navigate(redirect || '/');
     } catch (err) {
       toast.error(getError(err));
     } finally {
       setLoading(false);
     }
   };
-
-  /* useEffect(() => {
-    if (userInfo) {
-      navigate(redirect);
-    }
-  }, [navigate, redirect, userInfo]); */
 
   return (
     <Container className="small-container">
@@ -100,8 +92,30 @@ export default function SignupScreen() {
             />
           </Form.Group>
         </Form.Group>
+        <Form.Group controlId="gdprCheckbox" className="mb-3">
+          <Form.Check
+            type="checkbox"
+            label={
+              <>
+                Sunt de acord cu{' '}
+                <a
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Politica de Confidențialitate
+                </a>
+              </>
+            }
+            checked={agreedToGDPR}
+            onChange={(e) => setAgreedToGDPR(e.target.checked)}
+            required
+          />
+        </Form.Group>
         <div className="mb-3">
-          <Button type="submit">Înregistare</Button>
+          <Button type="submit" variant="light">
+            Înregistare
+          </Button>
         </div>
         <div className="mb-3">
           Ai deja un cont?{' '}

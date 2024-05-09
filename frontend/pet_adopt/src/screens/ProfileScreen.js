@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import { toast } from 'react-toastify';
 import { Store } from '../store';
+import ListGroup from 'react-bootstrap/ListGroup';
 import { getError } from '../utils';
 import MessageBox from '../components/MessageBox';
 
@@ -34,70 +33,93 @@ const reducer = (state, action) => {
       return { ...state, loadingDelete: false, successDelete: false };
     case 'DELETE_RESET':
       return { ...state, loadingDelete: false, successDelete: false };
+    case 'TOGGLE_ADOPTION_REQUEST':
+      return { ...state, loadingToggleAdoption: true };
+    case 'TOGGLE_ADOPTION_SUCCESS':
+      const updatedPets = state.pets.map((pet) =>
+        pet._id === action.payload.petId
+          ? { ...pet, adoption_status: action.payload.newStatus }
+          : pet
+      );
+      return {
+        ...state,
+        pets: updatedPets,
+        loadingToggleAdoption: false,
+      };
+    case 'TOGGLE_ADOPTION_FAIL':
+      return { ...state, loadingToggleAdoption: false };
     default:
       return state;
   }
 };
 
-export default function ProfileScreen() {
+const ProfileScreen = () => {
   const [
-    {
-      loading,
-      error,
-      pets,
-      pages,
-      loadingCreate,
-      loadingDelete,
-      successDelete,
-    },
+    { loading, error, pets, successDelete, loadingToggleAdoption },
     dispatch,
   ] = useReducer(reducer, {
     pets: [],
     loading: true,
     error: '',
   });
-  const navigate = useNavigate();
-  const { search } = useLocation();
-  const sp = new URLSearchParams(search);
 
   const { state } = useContext(Store);
   const { userInfo } = state;
-  const params = useParams();
-  const { username } = params;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
+      dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const { data } = await axios.get(`/api/pets/user/${userInfo.name}`, {
+        const { data } = await axios.get('/api/pets/user', {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
-        dispatch({ type: 'FETCH_FAIL', payload: err.message });
+        dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     if (successDelete) {
       dispatch({ type: 'DELETE_RESET' });
+      fetchData();
     } else {
       fetchData();
     }
   }, [userInfo, successDelete]);
 
-  const deleteHandler = async (pet) => {
+  const deleteHandler = async (petId) => {
     if (window.confirm('Are you sure to delete?')) {
       try {
-        await axios.delete(`/api/pets/user/${userInfo.name}/${pet._id}`, {
+        await axios.delete(`/api/pets/${petId}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
-        toast.success('product deleted successfully');
         dispatch({ type: 'DELETE_SUCCESS' });
+        toast.success('Pet deleted successfully');
       } catch (err) {
-        toast.error(getError(error));
-        dispatch({
-          type: 'DELETE_FAIL',
-        });
+        dispatch({ type: 'DELETE_FAIL' });
+        toast.error(getError(err));
       }
+    }
+  };
+
+  const toggleAdoptionStatus = async (petId, newStatus) => {
+    dispatch({ type: 'TOGGLE_ADOPTION_REQUEST' });
+    try {
+      await axios.put(
+        `/api/pets/${petId}`,
+        { adoption_status: newStatus ? 'Disponibil' : 'Indisponibil' },
+        {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      dispatch({
+        type: 'TOGGLE_ADOPTION_SUCCESS',
+        payload: { petId, newStatus },
+      });
+      toast.success('Actualizare status adoptie realizata cu succes');
+    } catch (err) {
+      dispatch({ type: 'TOGGLE_ADOPTION_FAIL' });
+      toast.error(getError(err));
     }
   };
 
@@ -109,19 +131,39 @@ export default function ProfileScreen() {
         <MessageBox variant="danger">{error}</MessageBox>
       ) : (
         <>
-          <h2>My Posts</h2>
-          {pets.map((pet) => (
-            <div key={pet._id} className="mb-3">
-              <h3>{pet.name}</h3>
-              <p>{pet.description}</p>
+          <h2 className="be-vietnam-pro-semibold">Animăluțele mele</h2>
+          <br />
+          <ListGroup>
+            {pets.map((pet) => (
+              <ListGroup.Item key={pet._id} className="mb-3">
+                <h3>{pet.name}</h3>
+                <p>{pet.description}</p>
+                <Button
+                  style={{ marginRight: '20px' }}
+                  variant="danger"
+                  onClick={() => deleteHandler(pet._id)}
+                >
+                  <i className="fas fa-trash"></i> Sterge
+                </Button>
 
-              <Button variant="danger" onClick={() => deleteHandler(pet)}>
-                <i className="fas fa-trash"></i> Delete
-              </Button>
-            </div>
-          ))}
+                <Button
+                  variant={pet.adoption_status ? 'danger' : 'success'}
+                  onClick={() =>
+                    toggleAdoptionStatus(pet._id, !pet.adoption_status)
+                  }
+                  disabled={loadingToggleAdoption}
+                >
+                  {pet.adoption_status
+                    ? 'Marcheaza ca indisponibil'
+                    : 'Marcheaza ca disponibil'}
+                </Button>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
         </>
       )}
     </div>
   );
-}
+};
+
+export default ProfileScreen;
