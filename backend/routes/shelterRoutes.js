@@ -87,20 +87,26 @@ shelterRouter.post(
 
       const review = {
         name: req.user.name,
-        rating: Number(req.body.rating),
+        rating: parseInt(req.body.rating),
         comment: req.body.comment,
       };
       shelter.reviews.push(review);
       shelter.numReviews = shelter.reviews.length;
       shelter.rating =
-        shelter.reviews.reduce((a, c) => c.rating + a, 0) /
-        shelter.reviews.length;
+        shelter.reviews.reduce((total, review) => {
+          const rating = parseFloat(review.rating);
+          if (!isNaN(rating)) {
+            return total + rating;
+          } else {
+            return total;
+          }
+        }, 0) / shelter.reviews.length;
       const updatedShelter = await shelter.save();
       res.status(201).send({
         message: 'Review Created',
         review: updatedShelter.reviews[updatedShelter.reviews.length - 1],
-        numReviews: shelter.numReviews,
-        rating: Number(shelter.rating),
+        numReviews: updatedShelter.numReviews,
+        rating: Number(updatedShelter.rating),
       });
     } else {
       res.status(404).send({ message: 'Shelter Not Found' });

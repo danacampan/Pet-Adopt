@@ -21,6 +21,11 @@ const initialState = {
       ? JSON.parse(localStorage.getItem('sheltersItems'))
       : [],
   },
+  form: {
+    formItems: localStorage.getItem('formItems')
+      ? JSON.parse(localStorage.getItem('formItems'))
+      : [],
+  },
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -36,6 +41,14 @@ function reducer(state, action) {
         : [...state.pets.petsItems, newPet];
       localStorage.setItem('pets', JSON.stringify(petsItems));
       return { ...state, pets: { ...state.pets, petsItems } };
+    case 'PET_REMOVE_ITEM': {
+      const petsItems = state.pets.petsItems.filter(
+        (item) => item._id !== action.payload._id
+      );
+      localStorage.setItem('petsItems', JSON.stringify(petsItems));
+      return { ...state, pets: { ...state.pets, petsItems } };
+    }
+
     case 'FAVORITES_ADD_ITEM':
       const newItem = action.payload;
       const existItem = state.favorites.favoritesItems.find(

@@ -89,9 +89,8 @@ function MyComponent() {
   }, []);
 
   const handleMarkerClick = (shelter) => {
-    //setSelectedMarker(marker);
-    //navigate(`/shelter/${encodeURIComponent(shelterName)}`);
-    setSelectedMarker(shelter);
+    navigate(`/shelter/${encodeURIComponent(shelter)}`);
+    //setSelectedMarker(shelter);
   };
 
   const handleInfoWindowClose = () => {
@@ -121,21 +120,8 @@ function MyComponent() {
           <Marker
             position={marker.position}
             icon={customMarkerIcon}
-            onClick={() => handleMarkerClick(marker)}
-          >
-            {selectedMarker === marker && (
-              <InfoWindow onCloseClick={handleInfoWindowClose}>
-                <div>
-                  <Link
-                    className="be-vietnam-pro-semibold name-link"
-                    to="/shelter/:name"
-                  >
-                    <p>{marker.name}</p>
-                  </Link>
-                </div>
-              </InfoWindow>
-            )}
-          </Marker>
+            onClick={() => handleMarkerClick(marker.title)}
+          ></Marker>
         ))}
       </GoogleMap>
     </Col>

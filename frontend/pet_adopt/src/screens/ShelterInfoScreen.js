@@ -39,16 +39,17 @@ const reducer = (state, action) => {
 function ShelterInfoScreen(props) {
   let reviewsRef = useRef();
 
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState('');
   const [comment, setComment] = useState('');
   const navigate = useNavigate();
   const { name } = useParams();
 
-  const [{ loading, error, shelter }, dispatch] = useReducer(reducer, {
-    shelter: [],
-    loading: true,
-    error: '',
-  });
+  const [{ loading, error, shelter, loadingCreateReview }, dispatch] =
+    useReducer(reducer, {
+      shelter: [],
+      loading: true,
+      error: '',
+    });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,11 +86,11 @@ function ShelterInfoScreen(props) {
         type: 'CREATE_SUCCESS',
       });
       toast.success('Recenzia s-a trimis cu succes.');
-      const updatedShelter = { ...shelter };
-      updatedShelter.reviews.unshift(data.review);
-      updatedShelter.numReviews = data.numReviews;
-      updatedShelter.rating = data.rating;
-      dispatch({ type: 'REFRESH_SHELTER', payload: updatedShelter });
+      //const updatedShelter = { ...shelter };
+      shelter.reviews.unshift(data.review);
+      shelter.numReviews = data.numReviews;
+      shelter.rating = parseInt(data.rating);
+      dispatch({ type: 'REFRESH_SHELTER', payload: shelter });
       window.scrollTo({
         behavior: 'smooth',
         top: reviewsRef.current.offsetTop,
@@ -153,7 +154,7 @@ function ShelterInfoScreen(props) {
                 <Form.Select
                   aria-label="Rating"
                   value={rating}
-                  onChange={(e) => setRating(e.target.value)}
+                  onChange={(e) => setRating(parseInt(e.target.value))}
                 >
                   <option value="">Selectează...</option>
                   <option value="1">1- Foarte slab</option>

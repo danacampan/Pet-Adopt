@@ -19,6 +19,7 @@ import SignupScreen from './screens/SignUpScreen';
 import MapScreen from './screens/MapScreen';
 import AdoptFormScreen from './screens/AdoptFormScreen';
 import ShelterInfoScreen from './screens/ShelterInfoScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -58,7 +59,7 @@ function App() {
                 </Link>
                 {userInfo ? (
                   <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
-                    <LinkContainer to="/profile">
+                    <LinkContainer to="/profile/:username">
                       <NavDropdown.Item>Profil</NavDropdown.Item>
                     </LinkContainer>
                     <NavDropdown.Divider />
@@ -91,6 +92,7 @@ function App() {
               <Route path="/map" element={<MapScreen />} />
               <Route path="/form" element={<AdoptFormScreen />} />
               <Route path="/shelter/:name" element={<ShelterInfoScreen />} />
+              <Route path="/profile/:username" element={<ProfileScreen />} />
             </Routes>
           </Container>
         </main>

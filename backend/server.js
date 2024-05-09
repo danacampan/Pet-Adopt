@@ -7,6 +7,8 @@ import seedRouter from './routes/seedRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import cors from 'cors';
 import shelterRouter from './routes/shelterRoutes.js';
+import formRouter from './routes/formRoutes.js';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -69,6 +71,7 @@ app.use('/api/seed', seedRouter);
 app.use('/api/pets', petRouter);
 app.use('/api/users', userRouter);
 app.use('/api/shelters', shelterRouter);
+app.use('/api/forms', formRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

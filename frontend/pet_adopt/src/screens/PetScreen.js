@@ -1,13 +1,18 @@
 import axios from 'axios';
-import { useContext, useEffect, useReducer } from 'react';
+import { useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Badge from 'react-bootstrap/Badge';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Helmet } from 'react-helmet-async';
 import { Store } from '../store';
+import Carousel from 'react-bootstrap/Carousel';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -28,6 +33,7 @@ const reducer = (state, action) => {
 
 function PetScreen() {
   const navigate = useNavigate();
+
   const params = useParams();
   const { slug } = params;
   const [{ loading, error, pet }, dispatch] = useReducer(reducer, {
@@ -73,77 +79,83 @@ function PetScreen() {
     <div>{error}</div>
   ) : (
     <div>
-      <Row className="d-flex justify-content-around">
-        <Col className="secondary-img" md={3}>
-          <img className="img-fluid" src={pet.photos[1]} alt={pet.name}></img>
-          <p></p>
-          <img className="img-fluid" src={pet.photos[2]} alt={pet.name}></img>
-        </Col>
-        <Col md={6}>
-          <img
-            className="img-fluid img-large"
-            src={pet.photos[0]}
-            alt={pet.name}
-          ></img>
-        </Col>
-        <Col className="petscreen-info be-vietnam-pro-medium " md={3} sm={6}>
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <Helmet>
-                <title>{pet.name}</title>
-              </Helmet>
-              <div className="d-flex flex-row justify-content-between">
-                <h1>{pet.name}</h1>
-                <div className="adopt-button ">
-                  <Button onClick={addToFavoritesHandler} variant="dark">
-                    <i className="fas fa-heart"></i>
-                  </Button>
+      <Helmet>
+        <title>{pet.name}</title>
+      </Helmet>
+      <div className="d-flex justify-content-between">
+        <div
+          style={{
+            width: '100%',
+            marginRight: '400px',
+            marginTop: '20px',
+            borderRadius: '20px',
+          }}
+        >
+          <Carousel>
+            {pet.photos.map((photo, index) => (
+              <Carousel.Item key={index}>
+                <img
+                  className="d-block w-100 h-100"
+                  src={photo}
+                  alt={`Slide ${index}`}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
+        </div>
+        <div style={{ width: '50%' }}>
+          <div className="petscreen-info be-vietnam-pro-medium">
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item">
+                <div className="d-flex justify-content-between">
+                  <h1>{pet.name}</h1>
+                  <div className="adopt-button">
+                    <Button onClick={addToFavoritesHandler} variant="dark">
+                      <i className="fas fa-heart"></i>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Vârstă:</strong> {pet.age}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Gen:</strong> {pet.gender}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Rasă:</strong> {pet.breed}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Adresă:</strong> {pet.address}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Informatii medicale:</strong> {pet.medical_info}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Descriere:</strong> {pet.description}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <Col>
+              </li>
+              <li className="list-group-item">
+                <strong>Vârstă:</strong> {pet.age}
+              </li>
+              <li className="list-group-item">
+                <strong>Gen:</strong> {pet.gender}
+              </li>
+              <li className="list-group-item">
+                <strong>Rasă:</strong> {pet.breed}
+              </li>
+              <li className="list-group-item">
+                <strong>Adresă:</strong> {pet.address}
+              </li>
+              <li className="list-group-item">
+                <strong>Informatii medicale:</strong> {pet.medical_info}
+              </li>
+              <li className="list-group-item">
+                <strong>Descriere:</strong> {pet.description}
+              </li>
+              <li className="list-group-item">
                 <strong>Status: </strong>
                 {pet.adoption_status === 'Disponibil' ? (
                   <Badge bg="success">Disponibil</Badge>
                 ) : (
                   <Badge bg="danger">Indisponibil</Badge>
                 )}
-              </Col>
-            </ListGroup.Item>
-            <p className="mt-2 px-3 ">
-              <strong>Utilizator:</strong> {pet.user.name}
-            </p>
+              </li>
+              <li className="list-group-item">
+                <strong>Utilizator:</strong> {pet.user.name}
+              </li>
+            </ul>
             {pet.adoption_status === 'Disponibil' && (
-              <div className="adopt-button ">
+              <div className="adopt-button">
                 <Button onClick={adoptHandler} variant="light">
                   Adoptă acum!
                 </Button>
               </div>
             )}
-          </ListGroup>
-        </Col>
-
-        <Col md={3}></Col>
-      </Row>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

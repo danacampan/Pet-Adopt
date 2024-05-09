@@ -1,6 +1,9 @@
 import express from 'express';
 const petRouter = express.Router();
 import Pet from '../models/petModel.js';
+import expressAsyncHandler from 'express-async-handler';
+import { isAuth, isAdmin } from '../utils.js';
+import User from '../models/userModel.js';
 
 // Route pentru a obtine toate animalele
 petRouter.get('/', async (req, res) => {
@@ -53,6 +56,39 @@ petRouter.post('/addpost', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+petRouter.get('/user/:username', async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const pets = await Pet.find({ user: user.name });
+    res.send(pets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+petRouter.delete(
+  '/:id',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const pet = await Pet.findById(req.params.id);
+    if (pet) {
+      if (pet.user.toString() === req.user._id.toString()) {
+        await pet.remove();
+        res.send({ message: 'Pet Deleted' });
+      } else {
+        res
+          .status(403)
+          .send({ message: 'You are not authorized to delete this pet' });
+      }
+    } else {
+      res.status(404).send({ message: 'Pet Not Found' });
+    }
+  })
+);
 /*
 
 // Route pentru a obtine un animal dupa ID
@@ -79,6 +115,7 @@ petRouter.patch('/:id', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // Route pentru a sterge un animal dupa ID
 petRouter.delete('/:id', async (req, res) => {
