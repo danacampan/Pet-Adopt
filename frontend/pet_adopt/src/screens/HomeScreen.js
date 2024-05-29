@@ -1,12 +1,10 @@
-import { Link } from 'react-router-dom';
-//import data from '../data';
+import React, { useEffect, useReducer } from 'react';
 import axios from 'axios';
-import { useEffect, useReducer, useState } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Pet from '../components/Pet';
 import { Helmet } from 'react-helmet-async';
-
+import Chatbot from '../components/Chatbot';
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_REQUEST':
@@ -61,7 +59,9 @@ function HomeScreen() {
           </Row>
         )}
       </div>
+      <Chatbot />
     </div>
   );
 }
+
 export default HomeScreen;

@@ -17,7 +17,16 @@ const petSchema = new mongoose.Schema(
       default: 'Disponibil',
     },
     photos: [String] /*{ type: String, required: true },*/,
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
+    shelter: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Shelter',
+      required: false,
+    },
   },
   {
     timestamps: true,

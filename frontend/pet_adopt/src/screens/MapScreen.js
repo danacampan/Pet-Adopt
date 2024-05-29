@@ -6,8 +6,9 @@ import {
   InfoWindow,
   useJsApiLoader,
 } from '@react-google-maps/api';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Form from 'react-bootstrap/Form';
 
 const containerStyle = {
   display: 'flex',
@@ -33,22 +34,37 @@ function MyComponent() {
   const navigate = useNavigate();
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
+  const [shelters, setShelters] = useState([]);
+  const [animalPosts, setAnimalPosts] = useState([]);
+  const [filter, setFilter] = useState('animalPosts'); // Default filter
   const [selectedMarker, setSelectedMarker] = useState(null);
 
-  const [shelters, setShelters] = useState([]);
+  const filters = [
+    { name: 'Adăposturi', value: 'shelters' },
+    { name: 'Anunțuri de animale', value: 'animalPosts' },
+  ];
 
   useEffect(() => {
     const fetchShelters = async () => {
       try {
         const response = await axios.get('/api/shelters');
         setShelters(response.data);
-        console.log(shelters);
       } catch (error) {
         console.error('Error fetching shelters:', error);
       }
     };
 
+    const fetchAnimalPosts = async () => {
+      try {
+        const response = await axios.get('/api/pets');
+        setAnimalPosts(response.data);
+      } catch (error) {
+        console.error('Error fetching animal posts:', error);
+      }
+    };
+
     fetchShelters();
+    fetchAnimalPosts();
   }, []);
 
   useEffect(() => {
@@ -56,17 +72,27 @@ function MyComponent() {
       const geocoder = new window.google.maps.Geocoder();
       const newMarkers = [];
 
-      shelters.forEach((shelter, index) => {
-        const address = shelter.address;
+      const itemsToMap = filter === 'shelters' ? shelters : animalPosts;
+
+      itemsToMap.forEach((item, index) => {
+        const address = item.address;
+        const photos = item.photos;
+        const user = item.user?.name;
         geocoder.geocode({ address: address }, (results, status) => {
           if (status === 'OK') {
             const location = results[0].geometry.location;
             newMarkers.push({
               position: { lat: location.lat(), lng: location.lng() },
-              title: shelter.name,
+              title: item.name,
               id: index,
+              id2: item._id,
+              address: address,
+              user: user,
+              photos: photos,
             });
-            setMarkers([...newMarkers]);
+            if (index === itemsToMap.length - 1) {
+              setMarkers(newMarkers);
+            }
           } else {
             console.error(
               `Geocode was not successful for the following reason: ${status}`
@@ -75,7 +101,7 @@ function MyComponent() {
         });
       });
     }
-  }, [isLoaded, shelters]);
+  }, [isLoaded, filter, shelters, animalPosts]);
 
   const onLoad = React.useCallback(function callback(map) {
     const bounds = new window.google.maps.LatLngBounds(center);
@@ -88,14 +114,14 @@ function MyComponent() {
     setMap(null);
   }, []);
 
-  const handleMarkerClick = (shelter) => {
-    navigate(`/shelter/${encodeURIComponent(shelter)}`);
-    //setSelectedMarker(shelter);
+  const handleMarkerClick = (marker) => {
+    setSelectedMarker(marker);
   };
 
   const handleInfoWindowClose = () => {
     setSelectedMarker(null);
   };
+
   const customMarkerIcon = isLoaded
     ? {
         url: '/images/Paw.png',
@@ -106,8 +132,23 @@ function MyComponent() {
     : null;
 
   return isLoaded ? (
-    <Col className>
+    <Col>
       <h1 className="mb-5">Hartă</h1>
+
+      <Form.Group controlId="filterDropdown" className="mb-3">
+        <Form.Label>Selectează filtrul</Form.Label>
+        <Form.Control
+          as="select"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          {filters.map((filterOption, idx) => (
+            <option key={idx} value={filterOption.value}>
+              {filterOption.name}
+            </option>
+          ))}
+        </Form.Control>
+      </Form.Group>
 
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -118,10 +159,48 @@ function MyComponent() {
       >
         {markers.map((marker, index) => (
           <Marker
+            key={index}
             position={marker.position}
             icon={customMarkerIcon}
-            onClick={() => handleMarkerClick(marker.title)}
-          ></Marker>
+            onClick={() => handleMarkerClick(marker)}
+          >
+            {selectedMarker === marker && (
+              <InfoWindow
+                onCloseClick={handleInfoWindowClose}
+                position={marker.position}
+              >
+                <div>
+                  <h6>{selectedMarker.title}</h6>
+                  <p>
+                    <strong>Adresă:</strong> {selectedMarker.address}
+                  </p>
+                  {selectedMarker.user && (
+                    <p>
+                      <strong>Utilizator:</strong> {selectedMarker.user}
+                    </p>
+                  )}
+                  {selectedMarker.photos[0] && (
+                    <img
+                      src={selectedMarker.photos[0]}
+                      alt="Poza"
+                      style={{ width: '100px', height: '100px' }}
+                    />
+                  )}
+                  <p>
+                    <Link
+                      to={
+                        filter === 'shelters'
+                          ? `/shelter/${encodeURIComponent(marker.id2)}`
+                          : `/pet/${encodeURIComponent(marker.title)}`
+                      }
+                    >
+                      Detalii
+                    </Link>
+                  </p>
+                </div>
+              </InfoWindow>
+            )}
+          </Marker>
         ))}
       </GoogleMap>
     </Col>

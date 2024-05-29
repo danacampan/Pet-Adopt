@@ -55,7 +55,10 @@ function Pet(props) {
         </div>
         <div className="d-flex flex-row px-2">
           <i style={{ color: '#919090' }} className="mt-3 fas fa-map"></i>
-          <p style={{ color: '#919090' }} className="be-vietnam-pro-semibold">
+          <p
+            style={{ color: '#919090', marginTop: '11px' }}
+            className="be-vietnam-pro-semibold"
+          >
             {pet.address}
           </p>
         </div>

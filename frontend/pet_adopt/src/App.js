@@ -21,6 +21,8 @@ import AdoptFormScreen from './screens/AdoptFormScreen';
 import ShelterInfoScreen from './screens/ShelterInfoScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
+import UserPostsScreen from './screens/UserPostsScreen';
+import ShelterPostsScreen from './screens/ShelterPostsScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -43,39 +45,45 @@ function App() {
                 <Navbar.Brand>Pet Adopt</Navbar.Brand>
               </LinkContainer>
               <Nav className=" me-auto w-100  justify-content-end">
-                <Link to="/favorites" className="nav-link">
-                  <i className="fas fa-heart"></i>
-                  {favorites.favoritesItems.length > 0 && (
-                    <Badge pill bg="danger">
-                      {favorites.favoritesItems.length}
-                    </Badge>
-                  )}
-                </Link>
-
-                <Link to="/map" className="nav-link">
-                  <i className="fas fa-map"></i>
-                </Link>
-                <Link className="nav-link" to="/addpost">
-                  Adaugă anunț
-                </Link>
                 {userInfo ? (
-                  <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
-                    <LinkContainer to={`/profile/${userInfo.name}`}>
-                      <NavDropdown.Item>Profil</NavDropdown.Item>
-                    </LinkContainer>
-                    <NavDropdown.Divider />
-                    <Link
-                      className="dropdown-item"
-                      to="#signout"
-                      onClick={signoutHandler}
-                    >
-                      Iesi din cont
+                  <>
+                    <Link to="/favorites" className="nav-link">
+                      <i className="fas fa-heart"></i>
+                      {favorites.favoritesItems.length > 0 && (
+                        <Badge pill bg="danger">
+                          {favorites.favoritesItems.length}
+                        </Badge>
+                      )}
                     </Link>
-                  </NavDropdown>
+                    <Link to="/map" className="nav-link">
+                      <i className="fas fa-map"></i>
+                    </Link>
+                    <Link className="nav-link" to="/addpost">
+                      Adaugă anunț
+                    </Link>
+                    <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
+                      <LinkContainer to={`/profile/${userInfo.name}`}>
+                        <NavDropdown.Item>Profil</NavDropdown.Item>
+                      </LinkContainer>
+                      <NavDropdown.Divider />
+                      <Link
+                        className="dropdown-item"
+                        to="#signout"
+                        onClick={signoutHandler}
+                      >
+                        Iesi din cont
+                      </Link>
+                    </NavDropdown>
+                  </>
                 ) : (
-                  <Link className="nav-link" to="/signin">
-                    Autentificare
-                  </Link>
+                  <>
+                    <Link to="/map" className="nav-link">
+                      <i className="fas fa-map"></i>
+                    </Link>
+                    <Link className="nav-link" to="/signin">
+                      Autentificare
+                    </Link>
+                  </>
                 )}
               </Nav>
             </Container>
@@ -92,9 +100,14 @@ function App() {
               <Route path="/addpost" element={<AddPostScreen />} />
               <Route path="/map" element={<MapScreen />} />
               <Route path="/form" element={<AdoptFormScreen />} />
-              <Route path="/shelter/:name" element={<ShelterInfoScreen />} />
+              <Route path="/shelter/:id" element={<ShelterInfoScreen />} />
               <Route path="/profile/:name" element={<ProfileScreen />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyScreen />} />
+              <Route path="/user/:userId/pets" element={<UserPostsScreen />} />
+              <Route
+                path="/shelter/:userId/pets"
+                element={<ShelterPostsScreen />}
+              />
             </Routes>
           </Container>
         </main>

@@ -5,6 +5,7 @@ import nodemailer from 'nodemailer';
 import expressAsyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import { isAuth, isAdmin, generateToken } from '../utils.js';
+import Shelter from '../models/shelterModel.js';
 
 const userRouter = express.Router();
 
@@ -91,6 +92,7 @@ userRouter.post(
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin,
+          isShelter: user.isShelter,
           token: generateToken(user),
         });
         return;
@@ -100,60 +102,96 @@ userRouter.post(
   })
 );
 
+const isShelter = (req, res, next) => {
+  if (req.user && req.user.isShelter) {
+    next();
+  } else {
+    res
+      .status(403)
+      .json({ message: 'Acces interzis. Doar adăposturile au acces.' });
+  }
+};
+
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
     const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser) {
-      return res.status(400).send({ message: 'Email-ul e deja inregistrat' });
+      return res.status(400).send({ message: 'Email-ul e deja înregistrat' });
     }
 
-    try {
-      const newUser = new User({
-        name: req.body.name,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password),
+    const newUser = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password),
+      isShelter: req.body.isShelter || false,
+    });
+
+    if (newUser.isShelter) {
+      const shelterInfo = req.body.shelterInfo;
+      if (!shelterInfo) {
+        return res
+          .status(400)
+          .send({ message: 'Informațiile despre adăpost sunt necesare' });
+      }
+
+      // Validăm că `shelterInfo.photos` este un array de stringuri
+      if (shelterInfo.photos && Array.isArray(shelterInfo.photos)) {
+        shelterInfo.photos = shelterInfo.photos.filter(
+          (photo) => typeof photo === 'string'
+        );
+      } else {
+        shelterInfo.photos = [];
+      }
+
+      const newShelter = new Shelter({
+        name: shelterInfo.name,
+        address: shelterInfo.address,
+        phone_number: shelterInfo.phone_number,
+        email: newUser.email,
+        password: newUser.password,
+        description: shelterInfo.description,
+        photos: shelterInfo.photos, // array de stringuri pentru URL-urile fotografiilor
+        user: newUser._id, // Asociază adăpostul cu utilizatorul
       });
 
-      const savedUser = await newUser.save();
-
-      const confirmationToken = jwt.sign(
-        { userId: savedUser._id },
-        process.env.JWT_SECRET,
-        { expiresIn: '1d' }
-      );
-
-      savedUser.confirmationToken = confirmationToken;
-      await savedUser.save();
-
-      const confirmationLink = `${process.env.FRONTEND_URL}/confirm/${confirmationToken}`;
-
-      const mailOptions = {
-        from: 'petadopt38@gmail.com',
-        to: savedUser.email,
-        subject: 'Confirmă înregistrarea',
-        text: `Dă click pe următorul link pentru a-ți verifica emailul: ${confirmationLink}`,
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error(error);
-          res.status(500).json({
-            message: 'Eroare la trimiterea email-ului de confirmare.',
-          });
-        } else {
-          console.log('Email sent: ' + info.response);
-          res.status(201).json({
-            message: 'Utilizator înregistrat cu succes.',
-          });
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ message: 'Eroare la înregistrarea utilizatorului.' });
+      await newShelter.save();
+      newUser.shelter = newShelter._id;
     }
+
+    const savedUser = await newUser.save();
+
+    const confirmationToken = jwt.sign(
+      { userId: savedUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    savedUser.confirmationToken = confirmationToken;
+    await savedUser.save();
+
+    const confirmationLink = `${process.env.FRONTEND_URL}/confirm/${confirmationToken}`;
+
+    const mailOptions = {
+      from: 'petadopt38@gmail.com',
+      to: savedUser.email,
+      subject: 'Confirmă înregistrarea',
+      text: `Dă click pe următorul link pentru a-ți verifica emailul: ${confirmationLink}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        res.status(500).json({
+          message: 'Eroare la trimiterea email-ului de confirmare.',
+        });
+      } else {
+        console.log('Email sent: ' + info.response);
+        res.status(201).json({
+          message: 'Utilizator înregistrat cu succes.',
+        });
+      }
+    });
   })
 );
 

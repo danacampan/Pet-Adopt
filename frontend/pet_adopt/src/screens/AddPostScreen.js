@@ -96,7 +96,7 @@ export default function AddPostScreen() {
   };
 
   return (
-    <Container className="small-container">
+    <Container className="small-container white-container">
       <Helmet>
         <title>Adaugă anunț</title>
       </Helmet>

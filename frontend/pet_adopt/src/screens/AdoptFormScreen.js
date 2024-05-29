@@ -131,7 +131,7 @@ const AdoptFormScreen = () => {
   };
 
   return (
-    <div style={{ marginLeft: '100px' }}>
+    <div className="white-container" style={{ marginLeft: '100px' }}>
       <h2>Formular de Cerere pentru Adoptarea unui Animal de Companie</h2>
       <form onSubmit={handleSubmit}>
         <h3>Informații Personale:</h3>

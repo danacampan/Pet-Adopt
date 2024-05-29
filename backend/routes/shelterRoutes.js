@@ -1,11 +1,16 @@
 import express from 'express';
 import Shelter from '../models/shelterModel.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
+import mongoose from 'mongoose';
+import Pet from '../models/petModel.js';
 
+const { ObjectId } = mongoose.Types;
 const shelterRouter = express.Router();
 
-// GET pentru a obtine toate adaposturile de animale
 shelterRouter.get('/', async (req, res) => {
   try {
     const shelters = await Shelter.find();
@@ -15,20 +20,59 @@ shelterRouter.get('/', async (req, res) => {
   }
 });
 shelterRouter.get('/name/:name', async (req, res) => {
-  const shelter = await Shelter.findOne({ name: req.params.name });
-  if (shelter) {
-    res.send(shelter);
-  } else {
-    res.status(404).send({ message: 'Shelter not found' });
+  try {
+    const shelter = await Shelter.findOne({ name: req.params.name }).populate(
+      'user'
+    );
+    if (shelter) {
+      res.send(shelter);
+    } else {
+      res.status(404).send({ message: 'Shelter not found' });
+    }
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
 });
 
-// GET pentru a obtine un adapost specific dupa ID
-shelterRouter.get('/:id', getShelter, (req, res) => {
-  res.json(res.shelter);
+shelterRouter.post('/:shelterId/pets', async (req, res) => {
+  try {
+    const { shelterId } = req.params;
+    const { name, age, breed, description, photos } = req.body;
+    const pet = new Pet({
+      name,
+      age,
+      breed,
+      description,
+      photos,
+      shelter: shelterId,
+    });
+    const createdPet = await pet.save();
+
+    const shelter = await Shelter.findById(shelterId);
+    shelter.pets.push(createdPet);
+    await shelter.save();
+
+    res.status(201).send({ message: 'Pet Added', pet: createdPet });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 });
 
-// POST pentru a crea un nou adapost de animale
+shelterRouter.get('/shelter/:shelterId', async (req, res) => {
+  const shelterId = req.params.shelterId;
+
+  if (!ObjectId.isValid(shelterId)) {
+    return res.status(400).send({ message: 'Invalid User ID' });
+  }
+
+  try {
+    const shelter = await Shelter.findById(shelterId).populate('pets');
+    res.send(shelter);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 shelterRouter.post('/', async (req, res) => {
   const shelter = new Shelter({
     name: req.body.name,
@@ -47,12 +91,10 @@ shelterRouter.post('/', async (req, res) => {
   }
 });
 
-// PUT pentru a actualiza un adăpost de animale existent
 shelterRouter.put('/:id', getShelter, async (req, res) => {
   if (req.body.name != null) {
     res.shelter.name = req.body.name;
   }
-  // Actualizează alte campuri ale adăpostului aici...
 
   try {
     const updatedShelter = await res.shelter.save();
@@ -62,7 +104,25 @@ shelterRouter.put('/:id', getShelter, async (req, res) => {
   }
 });
 
-// DELETE pentru a sterge un adapost de animale existent
+shelterRouter.get('/:id', async (req, res) => {
+  const shelterId = req.params.id;
+  if (!ObjectId.isValid(shelterId)) {
+    return res.status(400).send({ message: 'Invalid Shelter ID' });
+  }
+
+  try {
+    // Populate the user field
+    const shelter = await Shelter.findById(shelterId).populate('user');
+    if (shelter) {
+      res.status(200).send(shelter);
+    } else {
+      res.status(404).send({ message: 'Shelter not found' });
+    }
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
 shelterRouter.delete('/:id', getShelter, async (req, res) => {
   try {
     await res.shelter.remove();
@@ -114,7 +174,6 @@ shelterRouter.post(
   })
 );
 
-// Functie middleware pentru a obtine un adapost de animale dupa ID
 async function getShelter(req, res, next) {
   try {
     shelter = await Shelter.findById(req.params.id);
@@ -128,5 +187,107 @@ async function getShelter(req, res, next) {
   res.shelter = shelter;
   next();
 }
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'petadopt38@gmail.com',
+    pass: 'xqvy mudu zcok moie',
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
+shelterRouter.post(
+  '/signup',
+  expressAsyncHandler(async (req, res) => {
+    const existingUser = await Shelter.findOne({ email: req.body.email });
+    if (existingUser) {
+      return res.status(400).send({ message: 'Email-ul e deja inregistrat' });
+    }
+
+    try {
+      const newUser = new Shelter({
+        name: req.body.name,
+        address: req.body.address,
+        phone_number: req.body.phone_number,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password),
+        description: req.body.description,
+        user: req.body.user,
+      });
+
+      const savedUser = await newUser.save();
+
+      const confirmationToken = jwt.sign(
+        { userId: savedUser._id },
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
+      );
+
+      savedUser.confirmationToken = confirmationToken;
+      await savedUser.save();
+
+      const confirmationLink = `${process.env.FRONTEND_URL}/confirm/${confirmationToken}`;
+
+      const mailOptions = {
+        from: 'petadopt38@gmail.com',
+        to: savedUser.email,
+        subject: 'Confirmă înregistrarea',
+        text: `Dă click pe următorul link pentru a-ți verifica emailul: ${confirmationLink}`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+          res.status(500).json({
+            message: 'Eroare la trimiterea email-ului de confirmare.',
+          });
+        } else {
+          console.log('Email sent: ' + info.response);
+          res.status(201).json({
+            message: 'Utilizator înregistrat cu succes.',
+          });
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: 'Eroare la înregistrarea utilizatorului.' });
+    }
+  })
+);
+
+shelterRouter.get('/:id/posts', async (req, res) => {
+  const shelterId = req.params.id;
+  if (!ObjectId.isValid(shelterId)) {
+    return res.status(400).send({ message: 'Invalid Shelter ID' });
+  }
+  try {
+    const pets = await Pet.find({ shelter: new ObjectId(shelterId) });
+    res.send(pets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+shelterRouter.post(
+  '/signin',
+  expressAsyncHandler(async (req, res) => {
+    const shelter = await Shelter.findOne({ email: req.body.email });
+    if (shelter && bcrypt.compareSync(req.body.password, shelter.password)) {
+      res.status(200).send({
+        _id: shelter._id,
+        name: shelter.name,
+        email: shelter.email,
+        token: generateToken(shelter),
+      });
+    } else {
+      res.status(401).send({ message: 'Email sau parola invalide' });
+    }
+  })
+);
 
 export default shelterRouter;

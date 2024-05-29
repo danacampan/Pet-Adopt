@@ -8,6 +8,7 @@ import userRouter from './routes/userRoutes.js';
 import cors from 'cors';
 import shelterRouter from './routes/shelterRoutes.js';
 import formRouter from './routes/formRoutes.js';
+import chatBotRouter from './routes/chatBotRoutes.js';
 import nodemailer from 'nodemailer';
 
 dotenv.config();
@@ -25,6 +26,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/api/seed', seedRouter);
+app.use('/api/pets', petRouter);
+app.use('/api/users', userRouter);
+app.use('/api/shelters', shelterRouter);
+app.use('/api/forms', formRouter);
+app.use('/api/chatbot', chatBotRouter);
 
 app.post('/api/send-email', async (req, res) => {
   const { to = 'campan.dana15@gmail.com', subject, text } = req.body;
@@ -56,12 +64,6 @@ app.post('/api/send-email', async (req, res) => {
     res.status(500).send('Error sending email');
   }
 });
-
-app.use('/api/seed', seedRouter);
-app.use('/api/pets', petRouter);
-app.use('/api/users', userRouter);
-app.use('/api/shelters', shelterRouter);
-app.use('/api/forms', formRouter);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

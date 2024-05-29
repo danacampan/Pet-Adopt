@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useContext, useEffect, useReducer, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -13,6 +13,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { Helmet } from 'react-helmet-async';
 import { Store } from '../store';
 import Carousel from 'react-bootstrap/Carousel';
+import Chatbot from '../components/Chatbot';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -35,7 +36,7 @@ function PetScreen() {
   const navigate = useNavigate();
 
   const params = useParams();
-  const { slug } = params;
+  const { slug, userId } = params;
   const [{ loading, error, pet }, dispatch] = useReducer(reducer, {
     pet: [],
     loading: true,
@@ -96,7 +97,7 @@ function PetScreen() {
             {pet.photos.map((photo, index) => (
               <Carousel.Item key={index}>
                 <img
-                  className="d-flex w-100 h-100"
+                  className="pet-photos"
                   src={photo}
                   alt={`Slide ${index}`}
                 />
@@ -145,6 +146,8 @@ function PetScreen() {
               </li>
               <li className="list-group-item">
                 <strong>Utilizator:</strong> {pet.user.name}
+                <br></br>
+                <Link to={`/user/${pet.user._id}/pets`}>Vezi anunturi</Link>
               </li>
             </ul>
             {pet.adoption_status === 'Disponibil' && (
@@ -157,6 +160,7 @@ function PetScreen() {
           </div>
         </div>
       </div>
+      <Chatbot />
     </div>
   );
 }

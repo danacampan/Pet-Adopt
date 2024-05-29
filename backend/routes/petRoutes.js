@@ -4,11 +4,14 @@ import Pet from '../models/petModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, isAdmin } from '../utils.js';
 import User from '../models/userModel.js';
+import mongoose from 'mongoose';
+
+const { ObjectId } = mongoose.Types;
 
 // Route pentru a obtine toate animalele
 petRouter.get('/', async (req, res) => {
   try {
-    const pets = await Pet.find();
+    const pets = await Pet.find().populate('user');
     res.send(pets);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -17,6 +20,34 @@ petRouter.get('/', async (req, res) => {
 petRouter.get('/user', isAuth, async (req, res) => {
   try {
     const pets = await Pet.find({ user: req.user._id });
+    res.send(pets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+petRouter.get('/user/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  console.log('Received userId:', userId);
+  if (!ObjectId.isValid(userId)) {
+    return res.status(400).send({ message: 'Invalid User ID' });
+  }
+  try {
+    const pets = await Pet.find({ user: new ObjectId(userId) });
+    res.send(pets);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+petRouter.get('/shelter/:shelterId', async (req, res) => {
+  const shelterId = req.params.shelterId;
+
+  if (!ObjectId.isValid(shelterId)) {
+    return res.status(400).send({ message: 'Invalid Shelter ID' });
+  }
+  try {
+    const pets = await Pet.find({ shelter: new ObjectId(shelterId) });
     res.send(pets);
   } catch (err) {
     res.status(500).json({ message: err.message });
