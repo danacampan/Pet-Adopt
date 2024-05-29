@@ -9,6 +9,9 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Form from 'react-bootstrap/Form';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const containerStyle = {
   display: 'flex',
@@ -28,7 +31,7 @@ const center = {
 function MyComponent() {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: 'AIzaSyBqSxES0gUd7JoNggJUjnRh5bDS2JXjUZ4',
+    googleMapsApiKey: process.env.API_KEY,
   });
 
   const navigate = useNavigate();
