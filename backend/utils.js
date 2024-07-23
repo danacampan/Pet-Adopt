@@ -31,13 +31,13 @@ export const isAuth = (req, res, next) => {
   }
 };
 
-export const isAdmin = (req, res, next) => {
+/* export const isAdmin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
     res.status(401).send({ message: 'Invalid Admin Token' });
   }
-};
+}; */
 
 export const formEmailTemplate = (form) => {
   return `
@@ -46,7 +46,7 @@ export const formEmailTemplate = (form) => {
   <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
       <h2 style="text-align: center;">Confirmare cerere de adoptare</h2>
       
-      <p>Bună ${form.firstName},</p>
+      <p>Bună ${form.firstName} ,</p>
       
       <p>Îți mulțumim că ai completat formularul nostru pentru adoptarea unui animal de companie. Mai jos găsești un rezumat al informațiilor furnizate:</p>
       

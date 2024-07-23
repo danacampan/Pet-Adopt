@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import expressAsyncHandler from 'express-async-handler';
-import { isAuth, isAdmin } from '../utils.js';
+import { isAuth } from '../utils.js';
 import mongoose from 'mongoose';
 import Pet from '../models/petModel.js';
 

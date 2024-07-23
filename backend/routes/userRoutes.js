@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import expressAsyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
-import { isAuth, isAdmin, generateToken } from '../utils.js';
+import { isAuth, generateToken } from '../utils.js';
 import Shelter from '../models/shelterModel.js';
 
 const userRouter = express.Router();
@@ -12,7 +12,6 @@ const userRouter = express.Router();
 userRouter.get(
   '/',
   isAuth,
-  isAdmin,
   expressAsyncHandler(async (req, res) => {
     const users = await User.find({});
     res.send(users);
@@ -21,8 +20,7 @@ userRouter.get(
 
 userRouter.get(
   '/:id',
-  isAuth,
-  isAdmin,
+
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
@@ -33,10 +31,9 @@ userRouter.get(
   })
 );
 
-userRouter.put(
+/* userRouter.put(
   '/:id',
   isAuth,
-  isAdmin,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
@@ -49,12 +46,12 @@ userRouter.put(
       res.status(404).send({ message: 'User Not Found' });
     }
   })
-);
+); */
 
 userRouter.delete(
   '/:id',
   isAuth,
-  isAdmin,
+
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
@@ -135,7 +132,6 @@ userRouter.post(
           .send({ message: 'Informațiile despre adăpost sunt necesare' });
       }
 
-      // Validăm că `shelterInfo.photos` este un array de stringuri
       if (shelterInfo.photos && Array.isArray(shelterInfo.photos)) {
         shelterInfo.photos = shelterInfo.photos.filter(
           (photo) => typeof photo === 'string'
@@ -151,8 +147,8 @@ userRouter.post(
         email: newUser.email,
         password: newUser.password,
         description: shelterInfo.description,
-        photos: shelterInfo.photos, // array de stringuri pentru URL-urile fotografiilor
-        user: newUser._id, // Asociază adăpostul cu utilizatorul
+        photos: shelterInfo.photos,
+        user: newUser._id,
       });
 
       await newShelter.save();
@@ -195,30 +191,35 @@ userRouter.post(
   })
 );
 
-userRouter.put(
-  '/profile',
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      if (req.body.password) {
-        user.password = bcrypt.hashSync(req.body.password, 8);
-      }
+userRouter.put('/profile', isAuth, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { name, email, password } = req.body;
 
-      const updatedUser = await user.save();
-      res.send({
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        isAdmin: updatedUser.isAdmin,
-        token: generateToken(updatedUser),
-      });
-    } else {
-      res.status(404).send({ message: 'Utilizator negăsit.' });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  })
-);
 
+    user.name = name || user.name;
+    user.email = email || user.email;
+    if (password) {
+      user.password = bcrypt.hashSync(req.body.password, 8);
+    }
+
+    // Save updated user
+    const updatedUser = await user.save();
+
+    // Respond with updated user data
+    res.status(200).json({
+      //_id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      // Add any other fields you want to include in the response
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 export default userRouter;

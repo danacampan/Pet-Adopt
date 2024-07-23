@@ -2,12 +2,12 @@ import express from 'express';
 const petRouter = express.Router();
 import Pet from '../models/petModel.js';
 import expressAsyncHandler from 'express-async-handler';
-import { isAuth, isAdmin } from '../utils.js';
+import { isAuth } from '../utils.js';
 import User from '../models/userModel.js';
 import mongoose from 'mongoose';
 
 const { ObjectId } = mongoose.Types;
-
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
 // Route pentru a obtine toate animalele
 petRouter.get('/', async (req, res) => {
   try {
@@ -72,20 +72,54 @@ petRouter.get('/:id', async (req, res) => {
   }
 });
 
-// Route pentru a crea un animal nou
 petRouter.post('/addpost', async (req, res) => {
+  const {
+    name,
+    slug,
+    breed,
+    age,
+    gender,
+    address,
+    description,
+    medical_info,
+    adoption_status,
+    photos,
+    user,
+  } = req.body;
+
+  for (let i = 0; i < photos.length; i++) {
+    const photo = photos[i];
+    const size = Buffer.byteLength(photo, 'base64');
+    const type = photo.substring(
+      'data:image/'.length,
+      photo.indexOf(';base64')
+    );
+
+    if (!['jpeg', 'png', 'gif'].includes(type)) {
+      return res.status(400).json({
+        message: 'Tipul fișierului trebuie să fie jpeg, png sau gif.',
+      });
+    }
+
+    if (size > MAX_FILE_SIZE) {
+      return res.status(400).json({
+        message: 'Fiecare fotografie trebuie să fie mai mică de 2MB.',
+      });
+    }
+  }
+
   const pet = new Pet({
-    name: req.body.name,
-    slug: req.body.slug,
-    breed: req.body.breed,
-    age: req.body.age,
-    gender: req.body.gender,
-    address: req.body.address,
-    description: req.body.description,
-    medical_info: req.body.medical_info,
-    adoption_status: req.body.adoption_status,
-    photos: req.body.photos,
-    user: req.body.user,
+    name,
+    slug,
+    breed,
+    age,
+    gender,
+    address,
+    description,
+    medical_info,
+    adoption_status,
+    photos,
+    user,
   });
 
   try {

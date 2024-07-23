@@ -1,7 +1,7 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
-import { isAuth, isAdmin, formEmailTemplate } from '../utils.js';
+import { isAuth, formEmailTemplate } from '../utils.js';
 import nodemailer from 'nodemailer';
 import Form from '../models/formModel.js';
 
@@ -69,7 +69,7 @@ formRouter.post('/', async (req, res) => {
       <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
           <h2 style="text-align: center;">Confirmare cerere de adoptare</h2>
           
-          <h3>Bună Maria,</h3>
+          <h3>Bună,</h3>
           
           <h2>${req.body.firstName} ${req.body.lastName} doreste sa adopte animalul postat pe site: ${req.body.pet}</h2>
           <p>Mai jos puteti vedea informatiile de contact:</p>

@@ -6,6 +6,7 @@ import petRouter from './routes/petRoutes.js';
 import seedRouter from './routes/seedRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 import shelterRouter from './routes/shelterRoutes.js';
 import formRouter from './routes/formRoutes.js';
 import chatBotRouter from './routes/chatBotRoutes.js';
@@ -25,7 +26,9 @@ mongoose
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+//app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/seed', seedRouter);
 app.use('/api/pets', petRouter);
