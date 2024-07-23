@@ -10,7 +10,12 @@ const reducer = (state, action) => {
     case 'FETCH_REQUEST':
       return { ...state, loading: true };
     case 'FETCH_SUCCESS':
-      return { ...state, pets: action.payload, loading: false };
+      return {
+        ...state,
+        pets: action.payload.pets,
+        user: action.payload.user,
+        loading: false,
+      };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
@@ -20,8 +25,9 @@ const reducer = (state, action) => {
 
 function UserPostsScreen() {
   const { userId } = useParams();
-  const [{ pets, loading, error }, dispatch] = useReducer(reducer, {
+  const [{ pets, user, loading, error }, dispatch] = useReducer(reducer, {
     pets: [],
+    user: null,
     loading: false,
     error: '',
   });
@@ -29,8 +35,12 @@ function UserPostsScreen() {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const result = await axios.get(`/api/pets/user/${userId}`);
-        dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+        const petsResult = await axios.get(`/api/pets/user/${userId}`);
+        const userResult = await axios.get(`/api/users/${userId}`);
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: { pets: petsResult.data, user: userResult.data },
+        });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: err.message });
       }
@@ -46,13 +56,16 @@ function UserPostsScreen() {
       ) : error ? (
         <div>{error}</div>
       ) : (
-        <Row>
-          {pets.map((pet) => (
-            <Col key={pet.slug} sm={6} md={6} lg={3} className="mb-3">
-              <Pet pet={pet}></Pet>
-            </Col>
-          ))}
-        </Row>
+        <div>
+          <h2>Anunțurile postate de {user && user.name}:</h2>
+          <Row>
+            {pets.map((pet) => (
+              <Col key={pet.slug} sm={6} md={6} lg={3} className="mb-3">
+                <Pet pet={pet}></Pet>
+              </Col>
+            ))}
+          </Row>
+        </div>
       )}
     </div>
   );

@@ -23,6 +23,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import UserPostsScreen from './screens/UserPostsScreen';
 import ShelterPostsScreen from './screens/ShelterPostsScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -32,6 +33,7 @@ function App() {
     ctxDispatch({ type: 'USER_SIGNOUT' });
     localStorage.removeItem('userInfo');
     localStorage.removeItem('pets');
+    localStorage.removeItem('favoritesItems');
   };
 
   return (
@@ -62,7 +64,11 @@ function App() {
                       Adaugă anunț
                     </Link>
                     <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
-                      <LinkContainer to={`/profile/${userInfo.name}`}>
+                      <LinkContainer to={`/pets/${userInfo.name}`}>
+                        <NavDropdown.Item>Animalutele mele</NavDropdown.Item>
+                      </LinkContainer>
+                      <NavDropdown.Divider />
+                      <LinkContainer to={`/profile`}>
                         <NavDropdown.Item>Profil</NavDropdown.Item>
                       </LinkContainer>
                       <NavDropdown.Divider />
@@ -101,9 +107,10 @@ function App() {
               <Route path="/map" element={<MapScreen />} />
               <Route path="/form" element={<AdoptFormScreen />} />
               <Route path="/shelter/:id" element={<ShelterInfoScreen />} />
-              <Route path="/profile/:name" element={<ProfileScreen />} />
+              <Route path="/pets/:name" element={<ProfileScreen />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyScreen />} />
               <Route path="/user/:userId/pets" element={<UserPostsScreen />} />
+              <Route path="/profile" element={<EditProfileScreen />} />
               <Route
                 path="/shelter/:userId/pets"
                 element={<ShelterPostsScreen />}

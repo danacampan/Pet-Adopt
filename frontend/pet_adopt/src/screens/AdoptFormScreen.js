@@ -4,6 +4,7 @@ import axios, { Axios } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Store } from '../store';
 import { toast } from 'react-toastify';
+import Chatbot from '../components/Chatbot';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -521,6 +522,7 @@ const AdoptFormScreen = () => {
 
         <input type="submit" value="Trimite Cererea" />
       </form>
+      <Chatbot />
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import axios, { Axios } from 'axios';
-import { useContext, useEffect, useReducer, useState } from 'react';
+import axios from 'axios';
+import { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/esm/Container';
 import Form from 'react-bootstrap/Form';
@@ -8,6 +8,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Store } from '../store';
 import { toast } from 'react-toastify';
 import { getError } from '../utils';
+import Chatbot from '../components/Chatbot';
+
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
 export default function AddPostScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -19,14 +22,14 @@ export default function AddPostScreen() {
   const navigate = useNavigate();
   const { search } = useLocation();
 
-  const [name, setName] = useState(''); //(petsInfo.name || '');
-  const [slug, setSlug] = useState(''); //(petsInfo.slug || '');
-  const [age, setAge] = useState(''); //(petsInfo.age || '');
-  const [breed, setBreed] = useState(''); //(petsInfo.breed || '');
-  const [gender, setGender] = useState(''); //(petsInfo.gender || '');
-  const [address, setAddress] = useState(''); //(petsInfo.address || '');
-  const [description, setDescription] = useState(''); //(petsInfo.description || '');
-  const [medical_info, setMedical_Info] = useState(''); //(petsInfo.medicalInfo || '');
+  const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
+  const [age, setAge] = useState('');
+  const [breed, setBreed] = useState('');
+  const [gender, setGender] = useState('');
+  const [address, setAddress] = useState('');
+  const [description, setDescription] = useState('');
+  const [medical_info, setMedical_Info] = useState('');
   const [adoptionStatus, setAdoptionStatus] = useState('Disponibil');
   const [photos, setPhotos] = useState([]);
 
@@ -39,8 +42,17 @@ export default function AddPostScreen() {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    const photosArray = [];
+    for (let i = 0; i < photos.length; i++) {
+      if (photos[i].size > MAX_FILE_SIZE) {
+        toast.error(
+          'Fiecare fotografie trebuie să fie mai mică de 2MB. Alegeți alte fotografii.'
+        );
+        return;
+      }
+    }
+
     try {
-      const photosArray = [];
       for (let i = 0; i < photos.length; i++) {
         const reader = new FileReader();
         reader.readAsDataURL(photos[i]);
@@ -51,12 +63,12 @@ export default function AddPostScreen() {
           }
         };
       }
-      navigate('/');
     } catch (err) {
       console.error(err);
       toast.error('Eroare la procesarea fotografiilor.');
     }
   };
+
   const sendRequestWithPhotos = async (photosArray) => {
     try {
       const response = await axios.post('/api/pets/addpost', {
@@ -87,6 +99,7 @@ export default function AddPostScreen() {
         setMedical_Info('');
         setAdoptionStatus('Disponibil');
         setPhotos([]);
+        navigate('/');
       } else {
         toast.error('Eroare la adăugarea animalului.');
       }
@@ -146,7 +159,7 @@ export default function AddPostScreen() {
             <option value="">Alegeți sexul</option>
             <option value="Feminin">Feminin</option>
             <option value="Masculin">Masculin</option>
-            <option value="Masculin">Necunoscut</option>
+            <option value="Necunoscut">Necunoscut</option>
           </Form.Control>
         </Form.Group>
 
@@ -190,6 +203,7 @@ export default function AddPostScreen() {
           </Button>
         </div>
       </Form>
+      <Chatbot />
     </Container>
   );
 }

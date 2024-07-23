@@ -74,6 +74,10 @@ function PetScreen() {
     navigate('/signin?redirect=/form');
   };
 
+  const postsHandler = () => {
+    navigate(`/user/${pet.user._id}/pets`);
+  };
+
   return loading ? (
     <div>Loading...</div>
   ) : error ? (
@@ -147,7 +151,9 @@ function PetScreen() {
               <li className="list-group-item">
                 <strong>Utilizator:</strong> {pet.user.name}
                 <br></br>
-                <Link to={`/user/${pet.user._id}/pets`}>Vezi anunturi</Link>
+                <Button onClick={postsHandler} variant="light">
+                  Vezi anunțuri
+                </Button>
               </li>
             </ul>
             {pet.adoption_status === 'Disponibil' && (

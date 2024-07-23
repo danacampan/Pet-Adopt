@@ -8,8 +8,9 @@ import {
 } from '@react-google-maps/api';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Form from 'react-bootstrap/Form';
 import dotenv from 'dotenv';
+import Form from 'react-bootstrap/Form';
+import Chatbot from '../components/Chatbot';
 
 dotenv.config();
 
@@ -197,7 +198,7 @@ function MyComponent() {
                           : `/pet/${encodeURIComponent(marker.title)}`
                       }
                     >
-                      Detalii
+                      Vezi detalii
                     </Link>
                   </p>
                 </div>
@@ -206,6 +207,7 @@ function MyComponent() {
           </Marker>
         ))}
       </GoogleMap>
+      <Chatbot />
     </Col>
   ) : (
     <></>

@@ -76,15 +76,19 @@ function reducer(state, action) {
       return { ...state, favorites: { ...state.favorites, favoritesItems } };
     }
     case 'USER_SIGNIN':
-      return { ...state, userInfo: action.payload };
+      return {
+        ...state,
+        userInfo: action.payload,
+        favorites: { favoritesItems: action.payload },
+      };
     case 'USER_SIGNOUT':
       return {
         ...state,
         userInfo: null,
         pets: {
           petsItems: {},
-          favoritesItems: [],
         },
+        favorites: { favoritesItems: [] },
       };
     default:
       return state;

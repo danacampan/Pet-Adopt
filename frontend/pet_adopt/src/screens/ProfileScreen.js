@@ -7,6 +7,7 @@ import { Store } from '../store';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { getError } from '../utils';
 import MessageBox from '../components/MessageBox';
+import Chatbot from '../components/Chatbot';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -160,6 +161,7 @@ const ProfileScreen = () => {
               </ListGroup.Item>
             ))}
           </ListGroup>
+          <Chatbot />
         </>
       )}
     </div>

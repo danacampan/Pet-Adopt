@@ -7,6 +7,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import MessageBox from '../components/MessageBox';
 import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
+import Chatbot from '../components/Chatbot';
 
 export default function FavoritesScreen() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -58,6 +59,7 @@ export default function FavoritesScreen() {
           </ListGroup>
         )}
       </Col>
+      <Chatbot />
     </div>
   );
 }
